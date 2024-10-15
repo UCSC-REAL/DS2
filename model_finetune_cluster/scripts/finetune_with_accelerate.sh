@@ -9,8 +9,8 @@ data_type='random'
 labeling_model='gemma'
 dataset_name='flan_v2'
 
-# root_path="/home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/labeling/data/${labeling_model}/"
-train_data="/home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/labeling/data/${labeling_model}/${dataset_name}/${data_type}_dataset.json"
+# root_path="score_curation/data/${labeling_model}/"
+train_data="score_curation/data/${labeling_model}/${dataset_name}/${data_type}_dataset.json"
 GRADIENT_ACC_STEPS=$(($TOTAL_BATCH_SIZE/$NUM_GPUS/$BATCH_SIZE_PER_GPU))
 echo "Training llama model ${MODEL_SIZE} using $NUM_GPUS GPUs, $BATCH_SIZE_PER_GPU batch size per GPU, $GRADIENT_ACC_STEPS gradient accumulation steps"
 # echo "Training data: ${dataset_name}"
@@ -59,7 +59,7 @@ accelerate launch \
 #     --model_name_or_path meta-llama/Llama-2-7b-hf \
 #     --tokenizer_name meta-llama/Llama-2-7b-hf \
 #     --use_slow_tokenizer \
-#     --train_file /home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/labeling/data/gemma/flan_v2/filtered_dataset.json  \
+#     --train_file score_curation/data/gemma/flan_v2/filtered_dataset.json  \
 #     --max_seq_length 8192 \
 #     --preprocessing_num_workers 128 \
 #     --per_device_train_batch_size $BATCH_SIZE_PER_GPU \
@@ -79,7 +79,7 @@ python3  open_instruct/finetune.py \
 --model_name_or_path meta-llama/Llama-2-7b-hf \
 --tokenizer_name meta-llama/Llama-2-7b-hf \
 --use_slow_tokenizer \
---train_file /home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/labeling/data/gemma/flan_v2/filtered_dataset.json \
+--train_file score_curation/data/gemma/flan_v2/filtered_dataset.json \
 --output_dir output/tulu_v2_7B/ \
 --max_seq_length 4096 \
 --preprocessing_num_workers 128 \

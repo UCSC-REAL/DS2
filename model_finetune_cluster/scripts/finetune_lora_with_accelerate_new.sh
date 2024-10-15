@@ -22,7 +22,7 @@ max_seq_length=$8
 mkdir -p output/models/
 
 
-# train_data="/home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/labeling/data/${labeling_model}/${dataset_name}/${data_type}_dataset.json"
+# train_data="score_curation/data/${labeling_model}/${dataset_name}/${data_type}_dataset.json"
 echo "Processing data type: $data_type"
 
 train_data="new_train_data/${labeling_model}/${train_dataset_name}/${data_type}_dataset.json"

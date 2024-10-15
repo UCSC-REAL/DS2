@@ -177,7 +177,7 @@ export CUDA_VISIBLE_DEVICES=1
 # Evaluating llama 7B model using chain-of-thought
 for data_type in "${data_types[@]}"; do
 
-  mode_path="/home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/open-instruct/data_scale_models/lora_merged_${data_type}"
+  mode_path="./data_scale_models/lora_merged_${data_type}"
 
   python -m eval.gsm.run_eval \
       --data_dir data/eval/gsm/ \

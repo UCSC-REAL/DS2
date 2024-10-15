@@ -29,7 +29,7 @@ for i in "${!data_types[@]}"; do
   # 获取当前循环中的 GPU ID，使用取模操作来确保循环分配 GPU
   gpu_id=${gpu_ids[$((i % ${#gpu_ids[@]}))]}
 
-  mode_path="/home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/open-instruct/data_scale_models/lora_merged_${data_type}"
+  mode_path="./data_scale_models/lora_merged_${data_type}"
 
   CUDA_VISIBLE_DEVICES=${gpu_id} nohup python -m eval.truthfulqa.run_eval \
     --data_dir raw_data/eval/truthfulqa \

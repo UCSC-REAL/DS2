@@ -11,8 +11,8 @@ data_type='filtered'
 labeling_model='gemma'
 dataset_name='flan_v2'
 
-# root_path="/home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/labeling/data/${labeling_model}/"
-train_data="/home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/labeling/data/${labeling_model}/${dataset_name}/${data_type}_dataset.json"
+# root_path="score_curation/data/${labeling_model}/"
+train_data="score_curation/data/${labeling_model}/${dataset_name}/${data_type}_dataset.json"
 
 
 echo "Training llama model ${MODEL_SIZE} using $NUM_GPUS GPUs, $BATCH_SIZE_PER_GPU batch size per GPU, $GRADIENT_ACC_STEPS gradient accumulation steps"

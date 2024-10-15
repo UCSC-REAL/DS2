@@ -85,8 +85,8 @@ done
 #     --ntrain 0 \
 #     --data_dir raw_data/eval/mmlu \
 #     --save_dir results/mmlu/llama-7B-random \
-#     --model_name_or_path /home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/open-instruct/output/tulu_v2_7B_lora_merged_random\
-#     --tokenizer_name_or_path /home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/open-instruct/output/tulu_v2_7B_lora_merged_random \
+#     --model_name_or_path ./output/tulu_v2_7B_lora_merged_random\
+#     --tokenizer_name_or_path ./output/tulu_v2_7B_lora_merged_random \
 #     --eval_batch_size 4 \
 #     --load_in_8bit
 
@@ -95,8 +95,8 @@ done
 #     --ntrain 0 \
 #     --data_dir raw_data/eval/mmlu \
 #     --save_dir results/mmlu/llama-7B-filtered \
-#     --model_name_or_path /home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/open-instruct/output/tulu_v2_7B_lora_merged_filtered \
-#     --tokenizer_name_or_path /home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/open-instruct/output/tulu_v2_7B_lora_merged_filtered \
+#     --model_name_or_path ./output/tulu_v2_7B_lora_merged_filtered \
+#     --tokenizer_name_or_path ./output/tulu_v2_7B_lora_merged_filtered \
 #     --eval_batch_size 4 \
 #     --load_in_8bit
 

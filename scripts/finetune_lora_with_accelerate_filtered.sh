@@ -13,8 +13,8 @@
 # base_model='meta-llama/Llama-2-7b-hf'
 # # base_model='meta-llama/Meta-Llama-3.1-8B-Instruct'
 
-# # root_path="/home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/labeling/data/${labeling_model}/"
-# train_data="/home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/labeling/data/${labeling_model}/${dataset_name}/${data_type}_dataset.json"
+# # root_path="score_curation/data/${labeling_model}/"
+# train_data="score_curation/data/${labeling_model}/${dataset_name}/${data_type}_dataset.json"
 
 
 # GRADIENT_ACC_STEPS=$(($TOTAL_BATCH_SIZE/$NUM_GPUS/$BATCH_SIZE_PER_GPU))
@@ -98,9 +98,9 @@ data_types=('filtered')
 
 for data_type in "${data_types[@]}"
 do
-    # train_data="/home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/labeling/data/${labeling_model}/${dataset_name}/${data_type}_dataset.json"
+    # train_data="score_curation/data/${labeling_model}/${dataset_name}/${data_type}_dataset.json"
 
-    train_data="/home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/open-instruct/new_train_data/${labeling_model}/${dataset_name}/${data_type}_dataset.json"
+    train_data="./new_train_data/${labeling_model}/${dataset_name}/${data_type}_dataset.json"
 
     GRADIENT_ACC_STEPS=$(($TOTAL_BATCH_SIZE/$NUM_GPUS/$BATCH_SIZE_PER_GPU))
     echo "Training ${base_model} using $NUM_GPUS GPUs, $BATCH_SIZE_PER_GPU batch size per GPU, $GRADIENT_ACC_STEPS gradient accumulation steps"
