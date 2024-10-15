@@ -77,15 +77,15 @@ do
 
 
     ## lora for most of the models
-    # ./scripts/finetune_lora_with_accelerate_new.sh  "$train_dataset_name" "$labeling_model" "$base_model" "$data_type" "$cluster_root_path" "$TOTAL_BATCH_SIZE" "$BATCH_SIZE_PER_GPU" "$max_seq_length"
+    ./scripts/finetune_lora_with_accelerate_new.sh  "$train_dataset_name" "$labeling_model" "$base_model" "$data_type" "$cluster_root_path" "$TOTAL_BATCH_SIZE" "$BATCH_SIZE_PER_GPU" "$max_seq_length"
 
 
     # qlora for llama-2-13B, slower 5 times but gpu-memory effcient
-    ./scripts/finetune_qlora_with_accelerate_new.sh  "$train_dataset_name" "$labeling_model" "$base_model" "$data_type" "$cluster_root_path" "$TOTAL_BATCH_SIZE" "$BATCH_SIZE_PER_GPU" "$max_seq_length"
+    # ./scripts/finetune_qlora_with_accelerate_new.sh  "$train_dataset_name" "$labeling_model" "$base_model" "$data_type" "$cluster_root_path" "$TOTAL_BATCH_SIZE" "$BATCH_SIZE_PER_GPU" "$max_seq_length"
 
 
-    AZURE_STORAGE_CONTAINER_URL="https://afminternshipuksouth.blob.core.windows.net/jinlong/finetune_result/?sp=racwdlmeop&st=2024-08-24T00:58:39Z&se=2025-04-03T08:58:39Z&sv=2022-11-02&sr=c&sig=rbf41XiVlLJw76zeillA%2FRMAjgGMo2lQHO3m3RW5Ho8%3D"
-    azcopy copy "$cluster_root_path/*" "$AZURE_STORAGE_CONTAINER_URL" --recursive
+    # AZURE_STORAGE_CONTAINER_URL="https://afminternshipuksouth.blob.core.windows.net/jinlong/finetune_result/?sp=racwdlmeop&st=2024-08-24T00:58:39Z&se=2025-04-03T08:58:39Z&sv=2022-11-02&sr=c&sig=rbf41XiVlLJw76zeillA%2FRMAjgGMo2lQHO3m3RW5Ho8%3D"
+    # azcopy copy "$cluster_root_path/*" "$AZURE_STORAGE_CONTAINER_URL" --recursive
 
 
 done
