@@ -6,13 +6,12 @@ sentencepiece
 datasets
 deepspeed
 accelerate==0.31.0
-# peft>=0.11.1
 peft
 bitsandbytes>=0.41.1
 evaluate>=0.4.0
 tokenizers==0.19.1
 protobuf
-transformers==4.40.2
+transformers #4.36.2
 openai>=1.0.0
 tiktoken
 rouge_score
@@ -49,40 +48,6 @@ idna
 certifi
 pyyaml
 
-# flash-attn==2.5.8 --no-build-isolation
-# bitsandbytes
-
-# pip uninstall torch torchvision torchaudio
-# pip install torch==2.0.0+cu118 torchvision==0.15.1+cu118 torchaudio==2.0.1+cu118 -f https://download.pytorch.org/whl/torch_stable.html
-
-# pip install torch==2.2.2 torchvision==0.17.2 torchaudio==2.2.2 --index-url https://download.pytorch.org/whl/cu121 ##解决gpu not found问题
-# conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
-# conda install -c conda-forge accelerate
-# conda update -c conda-forge transformers
-    
-    
-# export PATH="/home/azureuser/.local/bin:$PATH" ##
-# echo $PATH
 
 
-# source ~/.bashrc
-# nano ~/.bashrc
-# cat ~/.bashrc
 
-# echo $PATH
-# export PATH="$HOME/.local/bin:$PATH"  >> ~/.bashrc
-
-
-#####################################################################
-# '''New instance'''
-#####################################################################
-# export PATH="/home/azureuser/.local/bin:$PATH"  >> ~/.bashrc
-# pip3 install deepspeed accelerate datasets transformers==4.40.2 bitsandbytes peft SentencePiece
-# pip install --upgrade protobuf
-
-# bash ./scripts/finetune_with_accelerate.sh
-
-
-# pip install transformers==4.36.2
-
-# azcopy copy ./data_refine/ 'https://afminternshipuksouth.blob.core.windows.net/jinlong?sp=racwdlmeop&st=2024-07-25T22:34:10Z&se=2024-07-26T06:34:10Z&sv=2022-11-02&sr=c&sig=Lqw62TgCXvKzMHW5lZybuUJWOuFRIUAIdGlAvZQPQww%3D' --recursive
