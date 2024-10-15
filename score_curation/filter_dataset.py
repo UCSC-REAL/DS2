@@ -39,7 +39,7 @@ def main(
 
 
     # change the original labels to the suggested label
-    root_path = f'/home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/labeling/data/{model_name}/'
+    root_path = f'score_curation/data/{model_name}/'
     labels = torch.load(root_path + f"{dataset_name}/output_labels_revised.pt")
 
     for sample_label in cured_sample_labels:

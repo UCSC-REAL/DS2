@@ -33,7 +33,7 @@ for DATASET_NAME in "${DATASET_LIST[@]}"; do
 done
 
 
-# root_dir="/home/azureuser/cloudfiles/code/Users/jinlong.pang/LADR_LLM_alignment_data_refinement/open-instruct" 
+# root_dir="score_curationopen-instruct" 
 # # data_dir="${root_dir}/logs/${MODEL_NAME}/${DATASET_NAME}"
 # data_dir="${root_dir}/zzzz-test/"
 
