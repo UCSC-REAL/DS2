@@ -30,7 +30,7 @@ def parse_args():
 
 args = parse_args()
 cfg = Config.fromfile(args.config)
-cfg.data_root = f'./'
+cfg.data_root = f'../'
 cfg.file_name = args.dataset_name
 cfg.dataset_type = args.dataset_name
 print(f"###### Dataset: {args.dataset_name}  #### Labeling model: {args.labeling_model}")

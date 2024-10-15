@@ -6,7 +6,7 @@ import os
 import copy
 from bitsandbytes.functional import dequantize_4bit
 
-cache_dir = '/mnt/batch/tasks/shared/LS_root/mounts/clusters/jinlong-exp/code/.cache/huggingface/hub/'
+cache_dir = None
 
 def dequantize_model(model, dtype=torch.bfloat16, device="cuda"):
     """

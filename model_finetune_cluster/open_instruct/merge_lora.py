@@ -8,7 +8,7 @@ import copy
 from bitsandbytes.functional import dequantize_4bit
 from peft.utils import _get_submodules
 
-# cache_dir = '/mnt/batch/tasks/shared/LS_root/mounts/clusters/jinlong-exp/code/.cache/huggingface/hub/'
+# cache_dir = None
 
 cache_dir = '/tmp/huggingface/hub/'
 

@@ -28,13 +28,11 @@ B_INST, E_INST = "[INST]", "[/INST]"
 
 class CustomDataset(Dataset):
     def __init__(self, dataset_name, dialogs, template):
-        # 直接存储原始对话数据
         self.dataset_name = dataset_name
         self.dialogs = dialogs
         self.template = template
     def __getitem__(self, idx):
 
-        # return self.dialogs[idx]
 
         return {'data': self.dialogs[idx], 'index': idx}
     
@@ -47,71 +45,17 @@ class CustomDataset(Dataset):
     
 
 
-def read_dialogs_from_json(file: str,  data_size):
-    dialogs = []
-    # The number of dialogs
-    # halueval
-    # end_dialog_idx = 1010
-    # start_dialog_idx = 10
-    
-    start_dialog_idx = 0
-    # end_dialog_idx = 10000
-
-    end_dialog_idx = data_size
-    
-    dialog_idx = 0  # Start counting from 0 to correctly match the first dialog as index 1
-    with open(file, 'r') as f:
-        for line in f:
-            # Skip comment lines
-            if not line.strip() or line.strip().startswith("//"):
-                continue  # Skip the line if it's a comment or blank
-
-
-            if start_dialog_idx <= dialog_idx <  end_dialog_idx:
-                # This point can use pdb for debugging or directly process the data
-                dialog_data = json.loads(line)
-                user_query = dialog_data["user_query"]
-                chatgpt_response = dialog_data['chatgpt_response']
-                hallucination_label = dialog_data['hallucination']  # 'yes' or 'no'
-                # hallucination_spans = dialog_data.get('hallucination_spans', [])  # Use get to handle missing fields
-
-                # Construct the dialog dictionary
-                dialog = [{
-                    # "role": "user",
-                    "content": user_query,
-                    "chatgpt_response": chatgpt_response,
-                    "hallucination_label": hallucination_label,
-                    # "hallucination_spans": hallucination_spans
-                }]
-                
-                dialogs.append(dialog)
-            elif dialog_idx > end_dialog_idx:
-                # Stop reading the file if the end of the target range is reached
-                break
-            
-            
-            dialog_idx += 1  # Increment dialog index only for non-comment lines
-
-    return dialogs
-
-
 
 def main(
     model_name: str = "llama",
     dataset_name: str = 'flan_v2',
     subset_name: str = None,
     prompt_template = 4, ### the prompt template
-    data_size = 3000,
-    peft_model: str=None,
-    quantization: bool=False,
     max_new_tokens = 128, #The maximum numbers of tokens to generate
-    min_new_tokens:int=0, #The minimum numbers of tokens to generate
-    prompt_file: str=None,
     seed: int=42, #seed value for reproducibility
     token_gap: int=0,
     root_path: str='logs',
     gpu_id: int=None,
-    safety_score_threshold: float=0.5,
     do_sample: bool=True, #Whether or not to use sampling ; use greedy decoding otherwise.
     use_cache: bool=True,  #[optional] Whether or not the model should use the past last key/values attentions Whether or not the model should use the past last key/values attentions (if applicable to the model) to speed up decoding.
     top_p: float=0.9, # [optional] If set to float < 1, only the smallest set of most probable tokens with probabilities that add up to top_p or higher are kept for generation.
@@ -119,14 +63,8 @@ def main(
     top_k: int=50, # [optional] The number of highest probability vocabulary tokens to keep for top-k-filtering.
     repetition_penalty: float=1.2, #The parameter for repetition penalty. 1.0 means no penalty.
     length_penalty: int=1, #[optional] Exponential penalty to the length that is used with beam-based generation.
-    enable_azure_content_safety: bool=False, # Enable safety check with Azure content safety api
-    enable_sensitive_topics: bool=False, # Enable check for sensitive topics using AuditNLG APIs
-    enable_saleforce_content_safety: bool=True, # Enable safety check woth Saleforce safety flan t5
-    use_fast_kernels: bool = False, # Enable using SDPA from PyTorch Accelerated Transformers, make use Flash Attention and Xformer memory-efficient kernels
-    enable_llamaguard_content_safety: bool = False,
     output_dir="/mnt/azureml/crunch/outputs/",
     # output_dir=".",
-
     **kwargs
 ):
 
@@ -138,11 +76,6 @@ def main(
     torch.manual_seed(seed)
 
     '''load model & tokenizer'''
-    # model_name = "meta-llama/Llama-2-7b-chat-hf"
-    # flash attention 2
-    # torch.bfloat16
-    # 8bit 4bit bitsandbytes
-    # accelerate
     
     if 'llama' in model_name:
         model_full_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
@@ -168,7 +101,6 @@ def main(
 
     elif 'mistral' in model_name:
         model_full_name = 'mistralai/Mistral-7B-Instruct-v0.3'
-        # model_full_name = 'mistralai/Mixtral-8x7B-Instruct-v0.1'
 
         batch_size = 30
         # chat template: https://www.promptingguide.ai/models/mistral-7b
@@ -189,19 +121,6 @@ def main(
             Remember: the output must strictly follow this format, without any deviations.
             ''')  
 
-
-    elif 'gemma' in model_name:
-        model_full_name = 'google/gemma-2b-it' # batch_size 20
-        # model_full_name = 'google/gemma-7b-it' #batch_size 10
-        # model_full_name = 'google/gemma-2-9b-it' #batch_size 10
-        batch_size=10
-
-        
-    elif model_name == 'opt':
-        model_full_name = 'facebook/opt-6.7b'
-
-
-
     else:
         raise NotImplementedError
     
@@ -218,20 +137,20 @@ def main(
     )
 
     accelerator = Accelerator()
-    # import pdb;pdb.set_trace()
 
     device_map=f'cuda:{gpu_id}' if gpu_id is not None else 'auto'
     model = AutoModelForCausalLM.from_pretrained(
         model_full_name,
         torch_dtype=torch.bfloat16,
         quantization_config = bnb_config,
-        # attn_implementation="flash_attention_2",  # 假设模型支持这个参数
+        trust_remote_code=True,
+        # attn_implementation="flash_attention_2",  
         # device_map="balanced",#"auto", "balanced", "balanced_low_0", "sequential"
         # device_map="auto", # when you use the accelerator, you don't need to set device_map
         # device_map={'':torch.cuda.current_device()},
         # device_map = {"": accelerator.device},
     )
-    model.bfloat16()
+
     tokenizer = AutoTokenizer.from_pretrained(model_full_name, padding_side='left')
     tokenizer.pad_token_id = tokenizer.eos_token_id
     # tokenizer.add_special_tokens({'pad_token': '[PAD]'})

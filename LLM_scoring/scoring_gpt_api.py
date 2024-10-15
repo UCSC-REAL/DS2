@@ -1,4 +1,3 @@
-from openai import OpenAI
 import regex as re
 import torch
 import fire
@@ -7,43 +6,17 @@ import os
 from tqdm import tqdm
 import numpy as np
 import json
-'''API key'''
-
-# openai.api_key = 'your-api-key'
-# client = openai.OpenAI(api_key=api_key)
-
-# export OPENAI_API_KEY=your_actual_api_key
-
-# client = OpenAI(
-#   base_url = "https://integrate.api.nvidia.com/v1",
-# #   api_key = "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"
-#   api_key = "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"
-# )
-##################################################################
+from collections import Counter
 import os
-from openai import AzureOpenAI
+from openai import OpenAI, AzureOpenAI
 
-os.environ["AZURE_OPENAI_KEY"] = "a35b8b00d740422590852f08ed15f8b0"
-os.environ["AZURE_OPENAI_ENDPOINT"] = "https://gpt-4o-mini-exp.openai.azure.com/"
 
-# echo 'export AZURE_OPENAI_KEY=a35b8b00d740422590852f08ed15f8b0' >> ~/.bashrc
-# echo 'export AZURE_OPENAI_ENDPOINT=https://gpt-4o-mini-exp.openai.azure.com/' >> ~/.bashrc
-
-# export AZURE_OPENAI_KEY=a35b8b00d740422590852f08ed15f8b0
-# export AZURE_OPENAI_ENDPOINT=https://gpt-4o-mini-exp.openai.azure.com/
-
-# client = AzureOpenAI(
-#     api_key=os.getenv("AZURE_OPENAI_KEY"),  
-#     api_version="2024-02-01",
-#     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")
-# )
 
 client = AzureOpenAI(
-    api_key='a35b8b00d740422590852f08ed15f8b0',
+    api_key=os.getenv("AZURE_OPENAI_KEY"),  
     api_version="2024-02-01",
-    azure_endpoint="https://gpt-4o-mini-exp.openai.azure.com/"
+    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")
 )
-
 
 
 def main(
@@ -52,27 +25,6 @@ def main(
     dataset_type: str='train',
     ):
 
-
-
-    # pre_prompt = (
-    #     "We are evaluating data samples to determine their suitability for finetuning a language model (LLM). "
-    #     "As a data sample quality evaluator, your task is to assess the following data sample based on the criteria listed below. "
-    #     "Rate the sample on a scale from 1 to 10 for each criterion, and then give an overall rating on a scale from 1 to 5.\n\n"
-    #     "Criteria:\n"
-    #     "1. Rarity: How uncommon or unique is this data sample within the dataset?\n"
-    #     "2. Completeness: How complete and coherent is the conversation or content in this data sample?\n"
-    #     "3. Informativeness: How rich is the data sample in terms of useful information?\n\n"
-    #     "A rating of 1 means the sample is not suitable, and a rating of 5 means it is very suitable for finetuning.\n\n"
-    #     "Here is an example:\n\n"
-    #     "Sample content:\n"
-    #     "The quick brown fox jumps over the lazy dog.\n\n"
-    #     # "Ratings:\n"
-    #     # "Rarity: 2\n"
-    #     # "Completeness: 10\n"
-    #     # "Informativeness: 3\n"
-    #     "### Rating: 1\n\n"
-    #     "Now, please evaluate the following data sample and directly return the overall numerical (integer) rating score without explanations.\n\n"
-    #     )
 
     pre_prompt = ('''
         As a data quality estimator, your task is to assess the quality of data sample based on the criteria: Rarity, Complexity, Informativeness.
@@ -88,21 +40,17 @@ def main(
 
     print(f"Labeling Model: {deployment_model}")
     print(f"Dataset Name: {dataset_name} ")
-    '''preprocess dataset'''
-
+    
+    
     print("Preprocessing dataset...")
-    inputs= []
-    ##########################################################################################
-    # dataset_name = "allenai/tulu-v2-sft-mixture"
-    # data = load_dataset(dataset_name, cache_dir=cache_dir)
-    # dialogs = data['train'].select(range(10000))
-    # dataset_name = 'flan_v2'
+
     data = load_dataset('json', data_files=f'data/train_data/{dataset_name}_data.jsonl', split=None, cache_dir=None)
     dialogs = data['train']
-    # for tulu dataset
+    
+    inputs= []
     for dialog in dialogs:
         conversation = ""
-        for message in dialog['messages']:  #[{{'role': 'user', 'content': 'blabla'}, {'role': 'assistant', 'content': 'blabla'}]
+        for message in dialog['messages']:  #format: [{{'role': 'user', 'content': ''}, {'role': 'assistant', 'content': ''}]
             conversation += f"### {message['role']}: {message['content']}\n"
 
         inputs.append(pre_prompt + conversation + "\n### Rating:")
@@ -112,7 +60,6 @@ def main(
     if not os.path.exists(path):
         os.makedirs(path)
 
-    ##############################################################################################################################
 
     def fetch_content(input, idx):
         completion = client.chat.completions.create(
@@ -135,7 +82,7 @@ def main(
     print("Start API call labeling...")
     print(f"Total dataset size: {len(inputs)}")
     
-    batch_size = 1024 #1024 # the batch_size
+    batch_size = 1024 # batch_size
     split_size = len(inputs)//batch_size + 1
 
     json_pattern = re.compile(r'\{(?:[^{}]|(?R))*\}')
@@ -158,7 +105,7 @@ def main(
                     
                     matches = json_pattern.findall(GPT_content)
 
-                    retry_count = 0  # 初始化重试计数器
+                    retry_count = 0  # retry count
 
                     max_retries=3
                     while not matches and retry_count < max_retries:
@@ -169,7 +116,7 @@ def main(
 
                     if matches:
                         try:
-                            # 解析并保存完整的 JSON 对象
+                            # extract the json object
                             json_obj = json.loads(matches[-1])
                             output_labels[idx] = [
                                 int(json_obj['Rarity']),
@@ -179,7 +126,7 @@ def main(
                             ]
 
                         except json.JSONDecodeError:
-                            print(f"JSON Decode Error for batch data {batch_indices[idx]}")
+                            print(f"JSON Decode Error for inputs with {idx}")
                     else:
                         print("fail to match the json format!")
                         output_labels[idx] = [0,0,0,0]
@@ -200,7 +147,6 @@ def main(
         torch.save(output_labels, path + f"output_labels_{batch_idx}.pt")
         total_output_labels.extend(output_labels)
 
-    from collections import Counter
 
     # assert len(inputs) == len(total_output_labels)
     print(f'total data size: {len(inputs)};; labeling data size: {len(total_output_labels)}')
@@ -212,58 +158,8 @@ def main(
 
     torch.save(total_output_labels, path + f"total_output_labels.pt")
 
-    ##############################################################################################################################
-    '''single sample labeling'''
-
-
-    # inputs = inputs[:10]
-    # contents = []
-    # output_labels = []
-    # for idx, input in tqdm(enumerate(inputs)):
-    #     messages= [{"role":"user","content": input}]
-
-    #     completion = client.chat.completions.create(
-    #     model=deployment_model, ##"meta/llama-3.1-8b-instruct",
-    #     messages=messages,
-    #     temperature=0.2,
-    #     top_p=0.7,
-    #     max_tokens=8192,
-    #     stream=True
-    #     )
-
-
-    #     GPT_content ='### Rating:'
-    #     for chunk in completion:
-    #         # CHUNK form: ChatCompletionChunk(id='chatcmpl-9mpk2ZphIgvKsrBWcNkLzvLbMjE9a', choices=[Choice(delta=ChoiceDelta(content='', function_call=None, role='assistant', tool_calls=None), finish_reason=None, index=0, logprobs=None)], created=1721425666, model='gpt-4-0613', object='chat.completion.chunk', service_tier=None, system_fingerprint=None, usage=None)
-    #         if chunk.choices[0].delta.content is not None:
-    #             print(chunk.choices[0].delta.content, end="")
-    #             GPT_content += chunk.choices[0].delta.content
-
-
-    #     print('\n' + '='*100 +'\n')
-    #     print(f"Input idx {idx}: {GPT_content}")
-    #     print('\n' + '='*100 +'\n')
-    #     match = re.search(r"### Rating:(\d+)", GPT_content)
-    #     label = match.group(1) if match else -1
-
-        
-    #     contents.append(GPT_content)
-    #     output_labels.append(label)
-
-
-    # import pdb;pdb.set_trace()
-
-
-        
-    # torch.save(contents, path + "output_contents.pt")
-    # torch.save(output_labels, path + "output_labels.pt")
-
-
-    # print("Finishing GPT labeling!!!")
 
 
 if __name__ == '__main__':
     fire.Fire(main)
     
-
-# nohup python3 data_refine/labeling_api.py --dataset_name flan_v2 > GPT_labeling.log &

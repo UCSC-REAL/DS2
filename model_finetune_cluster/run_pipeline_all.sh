@@ -22,8 +22,8 @@ labeling_model="meta-llama/Meta-Llama-3.1-8B-Instruct"
 ############ base_models #############
 
 declare -A base_models
-# base_models["meta-llama/Llama-2-7b-hf"]="128 1 4096"
-base_models["meta-llama/Meta-Llama-3.1-8B"]="64 1 2048"
+# base_models["meta-llama/Llama-2-7b-hf"]="128 1 4096"  
+base_models["meta-llama/Meta-Llama-3.1-8B"]="64 1 2048" # TOTAL_BATCH_SIZE BATCH_SIZE_PER_GPU max_seq_length
 # base_models["mistralai/Mistral-7B-v0.3"]="128 1 2048"
 
 

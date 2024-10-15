@@ -38,7 +38,7 @@ for idx in ${!labeling_models[@]}; do
   echo "#### processing labeling model: ${labeling_model}"
 
 
-  CUDA_VISIBLE_DEVICES=$gpu python3 ./tools/diagnose_tulu.py \
+  CUDA_VISIBLE_DEVICES=$gpu python3 diagnose_tulu.py \
     --config ./config/tulu_template.py \
     --dataset_name $dataset \
     --labeling_model $labeling_model &

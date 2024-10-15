@@ -1,5 +1,12 @@
 # TODO When updating flash-attn or torch in the future, make sure to update the version in the Dockerfile 
-torch<=2.3.0
+torch
+yapf
+addict
+torchvision
+pandas
+scikit-learn
+open_clip_torch==2.18.0
+
 scipy
 packaging
 sentencepiece
