@@ -12,8 +12,18 @@ In this project, we analyze the error patterns in LLM-generated scores and propo
 
 ## Step 1. LLM-prompt-based Rating
 
-In this project, we use three labeling models to generate rating scores, including GPT-4o-mini, Mistral-7B-Instruct-v0.3, LLaMA-3.1-8B-Instruct.  In particular, we can use the GPT API call to generate the model answers by executing the code ```LLM_Scoring/labeling_datasets_api.sh```. 
-For open-source models such as LLaMA and Mistral, one can submit the jobs via launcher to the cluster, i.e., ```launcher run job_labeling.yaml``` or generate scores locally using ```scoring_datasets_local.sh```.
+In this project, we use three labeling models to generate rating scores, including GPT-4o-mini, Mistral-7B-Instruct-v0.3, LLaMA-3.1-8B-Instruct.  In particular, we can use the GPT API call to generate the model answers by executing the code 
+```
+LLM_Scoring/labeling_datasets_api.sh
+``` 
+For open-source models such as LLaMA and Mistral, one can submit the jobs via launcher to the cluster, i.e., 
+```
+launcher run job_labeling.yaml
+``` 
+or generate scores locally using 
+```
+bash scoring_datasets_local.sh
+```
 
 
 
@@ -35,7 +45,14 @@ In particular, we use `new_dataset_score_curation.ipynb` to generate subset afte
 
 ## Step 4. Finetune & Evaluation
 Given the selected subsets in the path `model_finetune_cluster/new_train_data`, one can use the code base from [TULU](https://github.com/allenai/open-instruct) to finetune base models (Mistral or LLaMA) and then do evaluation.
-In particular, one can submit the jobs via launcher under the path `model_finetune_cluster/`. For example, one can submit the job by running the code `launcher run job_pipeline_all.yaml`. Models and evaluation results are stored in the [Azure StorageAccount](https://portal.azure.com/#view/Microsoft_Azure_Storage/ContainerMenuBlade/~/overview/storageAccountId/%2Fsubscriptions%2F6184c5ce-cd29-4d42-bbcc-0fb06a3f97f1%2FresourceGroups%2FACCLLM%2Fproviders%2FMicrosoft.Storage%2FstorageAccounts%2Fafminternshipuksouth/path/jinlong/etag/%220x8DCAC3F12DEAFFE%22/defaultEncryptionScope/%24account-encryption-key/denyEncryptionScopeOverride~/false/defaultId//publicAccessVal/None)  One can present the final result by running `python model_finetune_cluster/read_results.py`.
+In particular, one can submit the jobs via launcher under the path `model_finetune_cluster/`. For example, one can submit the job by running the code 
+```
+launcher run job_pipeline_all.yaml
+```
+Models and evaluation results are stored in the [Azure StorageAccount](https://portal.azure.com/#view/Microsoft_Azure_Storage/ContainerMenuBlade/~/overview/storageAccountId/%2Fsubscriptions%2F6184c5ce-cd29-4d42-bbcc-0fb06a3f97f1%2FresourceGroups%2FACCLLM%2Fproviders%2FMicrosoft.Storage%2FstorageAccounts%2Fafminternshipuksouth/path/jinlong/etag/%220x8DCAC3F12DEAFFE%22/defaultEncryptionScope/%24account-encryption-key/denyEncryptionScopeOverride~/false/defaultId//publicAccessVal/None)  One can present the final result by running 
+```
+python model_finetune_cluster/read_results.py
+```
 
 
 ## Final Results 
