@@ -6,11 +6,9 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 import accelerate
 from functools import partial
 from torch.utils.data import DataLoader,Dataset
-# from datasets import load_dataset, Dataset
 from tqdm import tqdm
 import numpy as np
 from accelerate.utils import is_xpu_available
-# from typing import Iterable, List, Optional, Tuple
 from accelerate import Accelerator
 import regex as re
 from datasets import load_dataset
@@ -20,14 +18,12 @@ print("Torch version:", torch.__version__)
 import torch.nn.functional as F
 
 
-
-### store the model 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 B_INST, E_INST = "[INST]", "[/INST]"
 
 
 class CustomDataset(Dataset):
-    def __init__(self, dataset_name, dialogs, template):
+    def __init__(self, dataset_name, dialogs, template=None):
         self.dataset_name = dataset_name
         self.dialogs = dialogs
         self.template = template
@@ -50,21 +46,15 @@ def main(
     model_name: str = "llama",
     dataset_name: str = 'flan_v2',
     subset_name: str = None,
-    prompt_template = 4, ### the prompt template
     max_new_tokens = 128, #The maximum numbers of tokens to generate
     seed: int=42, #seed value for reproducibility
-    token_gap: int=0,
     root_path: str='logs',
     gpu_id: int=None,
-    do_sample: bool=True, #Whether or not to use sampling ; use greedy decoding otherwise.
-    use_cache: bool=True,  #[optional] Whether or not the model should use the past last key/values attentions Whether or not the model should use the past last key/values attentions (if applicable to the model) to speed up decoding.
-    top_p: float=0.9, # [optional] If set to float < 1, only the smallest set of most probable tokens with probabilities that add up to top_p or higher are kept for generation.
-    temperature: float=1.2, # [optional] The value used to modulate the next token probabilities.
-    top_k: int=50, # [optional] The number of highest probability vocabulary tokens to keep for top-k-filtering.
-    repetition_penalty: float=1.2, #The parameter for repetition penalty. 1.0 means no penalty.
-    length_penalty: int=1, #[optional] Exponential penalty to the length that is used with beam-based generation.
-    output_dir="/mnt/azureml/crunch/outputs/",
-    # output_dir=".",
+    do_sample: bool=True, 
+    temperature: float=1.2, 
+    top_k: int=50, 
+    length_penalty: int=1, 
+    output_dir="./",
     **kwargs
 ):
 
@@ -231,7 +221,7 @@ def main(
 
     
     # dialogs = load_data(dataset_name, subset_name, data_size)
-    dataset = CustomDataset(dataset_name, inputs, template=prompt_template)
+    dataset = CustomDataset(dataset_name, inputs)
     # dataset = dataset.map(create_prompt_formats)
     data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=False) #, shuffle=True, seed=42 
 
