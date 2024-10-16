@@ -37,14 +37,15 @@ The corresponding curation report files could be found in the path `./score_cura
 
 
 ## Step 3. Data Selection including baselines
-Given the existing score curation reports, one can directly use the following jupyter notebooks to do data selection including all baselines: `new_dataset_all.ipynb`. The generated subsets can be further used for LLM instruction tuning. Other selected datasets used for ablation study can be also generated from the following jupyter notebooks located in `./score_curation`: `new_dataset_label_curation.ipynb` and `new_dataset_data_scale.ipynb`
+Given the existing score curation reports, one can directly use the following jupyter notebooks to do data selection including all baselines: `new_dataset_all.ipynb`. The generated subsets can be further used for LLM instruction tuning. Other selected datasets used for ablation study can be also generated from the following jupyter notebooks located in the `./score_curation` path: `new_dataset_label_curation.ipynb` and `new_dataset_data_scale.ipynb`.
+
 We implement nine baselines consists of random, perplexity, knn, [less](https://github.com/princeton-nlp/LESS), completion_length, full data, [alpagasus](https://github.com/Lichang-Chen/AlpaGasus/tree/main) (label-filtered), [deita](https://github.com/hkust-nlp/deita) (diversity-filtered), ours w/o. curation and ours.
 In particular, we use `new_dataset_score_curation.ipynb` to generate subset after curating machine-generated raw scores.
 
 
 
 ## Step 4. Finetune & Evaluation
-Given the selected subsets in the path `model_finetune_cluster/new_train_data`, one can use the code base from [TULU](https://github.com/allenai/open-instruct) to finetune base models (Mistral or LLaMA) and then do evaluation.
+Given the selected subsets in the path `model_finetune_cluster/new_train_data/`, one can use the code base from [TULU](https://github.com/allenai/open-instruct) to finetune base models (Mistral or LLaMA) and then do evaluation.
 In particular, one can submit the jobs via launcher under the path `model_finetune_cluster/`. For example, one can submit the job by running the code 
 ```
 launcher run job_pipeline_all.yaml
