@@ -1,5 +1,7 @@
 # Intern Project: Improving Data Efficiency via Curating LLM-Driven Rating Systems 
 
+---
+
 ## LLM Data Selection Pipeline
 More recent methods have begun to directly leverage the most powerful LLM GPT-4 as data selectors, utilizing their ability to score and filter large-scale datasets with greater precision. 
 However, like human annotations, these machine-generated labels (scores) may still be inaccurate or contain LLM-level biases.
@@ -10,7 +12,8 @@ In this project, we analyze the error patterns in LLM-generated scores and propo
 
 ## Step 1. LLM-prompt-based Rating
 
-In this project, we use three labeling models to generate rating scores, including GPT-4o-mini, Mistral-7B-Instruct-v0.3, LLaMA-3.1-8B-Instruct.  In particular, we can use the GPT API call to generate the model answers by executing the code `LLM_Scoring/labeling_datasets_api.sh`. For open-source models such as LLaMA and Mistral, one can submit the jobs via launcher to the cluster, i.e., `launcher run job_labeling.yaml` or generate scores locally using `scoring_datasets_local.sh`.
+In this project, we use three labeling models to generate rating scores, including GPT-4o-mini, Mistral-7B-Instruct-v0.3, LLaMA-3.1-8B-Instruct.  In particular, we can use the GPT API call to generate the model answers by executing the code ```LLM_Scoring/labeling_datasets_api.sh```. 
+For open-source models such as LLaMA and Mistral, one can submit the jobs via launcher to the cluster, i.e., ```launcher run job_labeling.yaml``` or generate scores locally using ```scoring_datasets_local.sh```.
 
 
 
