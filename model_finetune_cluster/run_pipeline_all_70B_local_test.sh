@@ -28,32 +28,16 @@ declare -A base_models
 # base_models["meta-llama/Llama-2-7b-hf"]="128 1 4096"
 # base_models["meta-llama/Meta-Llama-3.1-8B"]="64 1 2048"
 # base_models["mistralai/Mistral-7B-v0.3"]="128 1 2048"
-
-
 # base_models["meta-llama/Llama-2-13b-hf"]="128 1 2048"
 # base_models["meta-llama/Meta-Llama-3.1-70B"]="128 1 2048"
-
-
-base_models["meta-llama/Meta-Llama-3-8B"]="128 2 2048"
-
-
-############ base_models #############
-######################################
 
 
 ## # data_types used for ablation study, which determines the finetuned model
 
 # data_types=('filtered' 'completion' 'random' 'label-filtered' 'diversity-filtered'  'perplexity' 'knn' 'less' 'full') #baselines
 
-#
+data_types=('label-filtered' 'diversity-filtered' 'filtered') #baselines
 
-# data_types=('label-filtered' 'diversity-filtered' 'filtered') #baselines
-
-data_types=('test-64')
-
-# data_types=('random_seed3' 'random_seed4' 'random_seed5')
-
-# data_types=('random_seed3')
 
 
 #############################################################

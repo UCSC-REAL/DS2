@@ -83,7 +83,7 @@ done
 
 
 
-#     # # 导出数组的声明
+#     # #  
 #     # model_declaration=$(declare -p models)
 #     # save_dirs_declaration=$(declare -p save_dirs)
 #     # cuda_devices_declaration=$(declare -p cuda_devices)
@@ -205,7 +205,7 @@ done
 
 #     files_in_output_dir=$(ls "$cluster_root_path")
 
-#     # 打印文件列表
+#     #   
 #     echo "Files in output directory:"
 #     echo "$files_in_output_dir"
 

@@ -75,7 +75,7 @@ do
 
         if [[ $data_type == "base" ]]; then
             echo "Skipping base model finetune"
-            continue  # 跳过 item2，继续下一个 item
+            continue  
         fi
 
         mkdir -p models/

@@ -40,8 +40,6 @@ cfg.preprocessed_dataset_path = cfg.save_path + f'dataset_{args.dataset_name}.pt
 
 cfg.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-### raw labels -- subset
-# cfg.label_path = cfg.data_root + f'labeling-info/output/{args.labeling_model}/{args.dataset_name}/output_labels_revised.pt'
 
 ## raw labels 
 cfg.label_path = cfg.data_root + f'model_finetune_cluster/new_train_data/{args.labeling_model}/{args.dataset_name}/output_labels_revised.pt'
@@ -81,8 +79,6 @@ detector.detect()
 
 
 ## feature-wise: embedding distance
-
-# import pdb;pdb.set_trace()
 print("starting feature-wise part: calculating embedding distance!!!")
 detector_feature = DetectFeature(cfg, dataset, report = report)
 detector_feature.rare_score()

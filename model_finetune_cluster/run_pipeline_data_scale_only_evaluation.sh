@@ -93,7 +93,7 @@ cluster_root_path="data_scale_result_seed${SEED}" ## . for local
 
 #             if [[ $data_type == "base" ]]; then
 #                 echo "Skipping base model finetune"
-#                 continue  # 跳过 item2，继续下一个 item
+#                 continue     
 #             fi
 
 #             mkdir -p $cluster_root_path/models/

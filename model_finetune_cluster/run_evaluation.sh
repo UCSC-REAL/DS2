@@ -26,7 +26,6 @@ data_types=('filtered')
 #########################################################################################################################################################
 ## system root path
 cluster_root_path="output" ## . for local
-# cluster_root_path="" ## . for local
 
 mkdir -p $cluster_root_path
 
@@ -207,7 +206,7 @@ for train_dataset_name in "${TRAIN_DATASET_LIST[@]}"; do
 
     files_in_output_dir=$(ls "$cluster_root_path")
 
-    # 打印文件列表
+    #   
     echo "Files in output directory:"
     echo "$files_in_output_dir"
 
