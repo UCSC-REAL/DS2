@@ -75,52 +75,80 @@ def main(
         torch.cuda.manual_seed(seed)
     torch.manual_seed(seed)
 
-    '''load model & tokenizer'''
+
+    '''prompt template'''
+    # full_prompt_template = ('''As a data quality estimator, your task is to assess the quality of data sample based on the criteria: Rarity, Complexity, Informativeness.
+    # Please rate the sample on a scale from 1 to 10 for each criterion, and return an overall rating on a scale from 1 to 10, where a higher score indicates higher level of quality.
+    # Ensure that the ratings are not overly concentrated around a specific score. If multiple samples have similar qualities, consider spreading the scores more evenly to reflect subtle differences.
+    # Now, please carefully evaluate the following data sample and return the integral evaluation scores using the JSON format:
+    # {
+    #     "Rarity": <number, 1-10>,
+    #     "Complexity": <number, 1-10>,
+    #     "Informativeness": <number, 1-10>,
+    #     "Overall rating": <number, 1-10>
+    # }
+    # Remember: the output must strictly follow this format, without any deviations.
+    # ''')  
     
-    if 'llama' in model_name:
+    system_prompt = '''As a data quality estimator, your task is to assess the quality of data sample based on the criteria: Rarity, Complexity, Informativeness.
+        Please rate the sample on a scale from 1 to 10 for each criterion, and return an overall rating on a scale from 1 to 10, where a higher score indicates higher level of quality.
+        Ensure that the ratings are not overly concentrated around a specific score. If multiple samples have similar qualities, consider spreading the scores more evenly to reflect subtle differences.
+        '''
+    
+    user_prompt ='''Now, please carefully evaluate the following data sample and return the integral evaluation scores using the JSON format:
+        {
+            "Rarity": <number, 1-10>,
+            "Complexity": <number, 1-10>,
+            "Informativeness": <number, 1-10>,
+            "Overall rating": <number, 1-10>
+        }
+        Remember: the output must strictly follow this format, without any deviations.
+        '''   
+
+
+    '''load model & tokenizer'''
+    if 'llama' in model_name.lower():
         model_full_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
-        batch_size =30 #30
-
+        batch_size =30
         # chat template: https://llama.meta.com/docs/model-cards-and-prompt-formats/llama3_1/
-        model_start_tag = "<|begin_of_text|><|start_header_id|>system<|end_header_id|>You are a helpful assistant<|eot_id|><|start_header_id|>user<|end_header_id|>"
-        model_end_tag = "<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
-
-        pre_prompt = ('''
-            As a data quality estimator, your task is to assess the quality of data sample based on the criteria: Rarity, Complexity, Informativeness.
-            Please rate the sample on a scale from 1 to 10 for each criterion, and return an overall rating on a scale from 1 to 10, where a higher score indicates higher level of quality.
-            Now, please carefully evaluate the following data sample and return the integral evaluation scores using the JSON format:
-            {
-                "Rarity": <number, 1-10>,
-                "Complexity": <number, 1-10>,
-                "Informativeness": <number, 1-10>,
-                "Overall rating": <number, 1-10>
-            }
-            Remember: the output must strictly follow this format, without any deviations.
-            ''')  
-
-
-    elif 'mistral' in model_name:
+        prompt_template = '''
+                    <|begin_of_text|><|start_header_id|>system<|end_header_id|>{system_prompt}<|eot_id|>
+                    <|start_header_id|>user<|end_header_id|>{user_prompt} \n## Data sample (conversation):\n{conversation}<|eot_id|> 
+                    <|start_header_id|>assistant<|end_header_id|>
+                    '''
+        
+    elif 'mistral' in model_name.lower():
         model_full_name = 'mistralai/Mistral-7B-Instruct-v0.3'
-
-        batch_size = 30
+        batch_size = 50
         # chat template: https://www.promptingguide.ai/models/mistral-7b
         # chat template: <s>[INST] Instruction [/INST] Model answer</s>[INST] Follow-up instruction [/INST]
-        model_start_tag = "<s>[INST]"
-        model_end_tag = "[/INST]"
-        pre_prompt = ('''
-            As a data quality estimator, your task is to assess the quality of data sample based on the criteria: Rarity, Complexity, Informativeness.
-            Please rate the sample on a scale from 1 to 10 for each criterion, and return an overall rating on a scale from 1 to 10, where a higher score indicates higher level of quality.
-            Ensure that the ratings are not overly concentrated around a specific score. If multiple samples have similar qualities, consider spreading the scores more evenly to reflect subtle differences.
-            Now, please carefully evaluate the following data sample and return the integral evaluation scores using the JSON format:
-            {
-                "Rarity": <number, 1-10>,
-                "Complexity": <number, 1-10>,
-                "Informativeness": <number, 1-10>,
-                "Overall rating": <number, 1-10>
-            }
-            Remember: the output must strictly follow this format, without any deviations.
-            ''')  
+        prompt_template = '''
+                    <s>[INST]system{system_prompt}[/INST]
+                    [INST]user{user_prompt} \n## Data sample (conversation):\n{conversation}[/INST]
+                    [INST]assistant
+                    '''    
+    
 
+    elif 'gemma' in model_name.lower():
+        model_full_name = 'google/gemma-2-9b-it' 
+        batch_size=20
+        
+        prompt_template = '''
+            <bos><start_of_turn>system{system_prompt}<end_of_turn>
+            <bos><start_of_turn>user{user_prompt} \n## Data sample (conversation):\n{conversation}<end_of_turn>
+            <start_of_turn>model
+            '''    
+
+    elif "phi" in model_name.lower():
+        model_full_name = "microsoft/Phi-3.5-mini-instruct"
+        batch_size = 20
+
+        prompt_template = '''
+             <|system|>{system_prompt}<end>\n
+            <|user|>{user_prompt} \n## Data sample (conversation):\n{conversation}<end>\n
+            <|assistant|>
+            '''    
+            
     else:
         raise NotImplementedError
     
@@ -153,22 +181,13 @@ def main(
 
     tokenizer = AutoTokenizer.from_pretrained(model_full_name, padding_side='left')
     tokenizer.pad_token_id = tokenizer.eos_token_id
-    # tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-
-
-    '''prompting'''
-    print("choose the prompt for model!!") ## pre_prompt
-
 
     '''preprocess dataset'''
     print("Preprocessing dataset...")
     inputs= []
-    ##########################################################################################
+    tulu_subsets_list =['flan_v2', 'oasst1', 'wizardlm', 'dolly', 'stanford_alpaca']
 
-    dataset_list =['flan_v2', 'oasst1', 'wizardlm', 'dolly', 'stanford_alpaca']
-
-    if dataset_name in dataset_list:
-        # data = load_dataset('parquet', data_files=f'./tulu_split_parquet/{dataset_name}.parquet')
+    if dataset_name in tulu_subsets_list:
         data = load_dataset('json', data_files=f'./train_data/{dataset_name}_data.jsonl')
         dialogs = data['train']
 
@@ -176,34 +195,38 @@ def main(
             conversation = ""
             for message in dialog['messages']:  #[{{'role': 'user', 'content': 'blabla'}, {'role': 'assistant', 'content': 'blabla'}]
                 conversation += f"### {message['role']}: {message['content']}\n"
-            inputs.append(model_start_tag + pre_prompt + "## Data sample (conversation):\n" + conversation + model_end_tag)
-            
+            inputs.append(prompt_template.format(system_prompt, user_prompt, conversation))
+    
+    #load data from Huggingface
     elif 'alpaca' in dataset_name:
-        print(f"###################load dataset: tatsu-lab/alpaca")
-        data = load_dataset("tatsu-lab/alpaca")
-        dialogs = data['train']
+        dataset_name = 'tatsu-lab/alpaca'
+        print(f"Loading dataset: {dataset_name}")
+        dialogs = load_dataset(dataset_name)['train']
+        
         for dialog in dialogs['text']:
-            inputs.append(pre_prompt + "## Data sample (conversation):\n" + dialog + model_end_tag)
+            inputs.append(prompt_template.format(system_prompt, user_prompt, conversation))
 
-    elif 'dolly' in dataset_name:
-        print(f"###################load dataset: databricks/databricks-dolly-15k")
-        data = load_dataset("databricks/databricks-dolly-15k")
-        dialogs = data['train']
+    elif 'dolly' in dataset_name:        
+        dataset_name = 'databricks/databricks-dolly-15k'
+        print(f"Loading dataset: {dataset_name}")
+        dialogs = load_dataset(dataset_name)['train']
+        
         for dialog in dialogs:
             conversation = f"### Instruction: {dialog['instruction']} ### Response: {dialog['response']}"
-            inputs.append(pre_prompt + f"## Data sample (conversation):\n" + conversation + model_end_tag)
+            inputs.append(prompt_template.format(system_prompt, user_prompt, conversation))
 
     elif 'wizardLM' in dataset_name:
-        print(f"###################load dataset: WizardLMTeam/WizardLM_evol_instruct_V2_196k")
-        data = load_dataset("WizardLMTeam/WizardLM_evol_instruct_V2_196k")
-        dialogs = data['train']
+        dataset_name = 'WizardLMTeam/WizardLM_evol_instruct_V2_196k'
+        print(f"Loading dataset: {dataset_name}")
+        dialogs = load_dataset(dataset_name)['train']
+        
         for dialog in dialogs['conversations']:
-            f"### Human: {dialog[0]['value']} ### Assitant: {dialog[1]['value']}"
-            conversation =  f"### Human: {dialog[0]['value']} ### Assitant: {dialog[1]['value']}"
-            inputs.append(pre_prompt + f"## Data sample (conversation):\n" + conversation + model_end_tag)
+            f"### Human: {dialog[0]['value']} ### Assistant: {dialog[1]['value']}"
+            conversation =  f"### Human: {dialog[0]['value']} ### Assistant: {dialog[1]['value']}"
+            inputs.append(prompt_template.format(system_prompt, user_prompt, conversation))
 
     else:
-        print("no such dataset used.")
+        print("Dataset can not be found!")
 
 
     
@@ -216,11 +239,8 @@ def main(
     ###accelerator 
     data_loader, model, tokenizer = accelerator.prepare(data_loader, model, tokenizer)
 
-    output_text_all = []
     output_labels = []
     results = [] #store the results for data parallel
-    perplexity_all = []
-
     rating_all = []
 
     json_pattern = re.compile(r'\{(?:[^{}]|(?R))*\}')
@@ -249,44 +269,40 @@ def main(
                 **kwargs
             )
 
-            # 计算 perplexity
+            # calculate perplexity
             logits = model(input_ids=encodings['input_ids'], attention_mask=encodings['attention_mask']).logits
             shift_logits = logits[..., :-1, :].contiguous()
             shift_labels = encodings['input_ids'][..., 1:].contiguous()
 
-            # 使用交叉熵损失计算 perplexity
             loss = F.cross_entropy(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1), reduction='none')
             loss = loss.view(shift_labels.size())
             perplexity_batch = torch.exp(loss.sum(dim=-1) / shift_labels.ne(tokenizer.pad_token_id).sum(dim=-1))
-
-            # perplexity_batch = perplexity_batch.cpu().tolist()
-            # perplexity_all.extend(perplexity_batch)
 
 
             output_text_batch = [tokenizer.decode(x, skip_special_tokens=True) for x in outputs]
             rating_batch = [None] * len(batch_data)
             
             for idx, output_text in enumerate(output_text_batch):
-                # print("########################################################################################\n")
+                # print("="*50 + "\n")
                 # print(output_text)   
-                # print("\n########################################################################################")
-
+                # print("="*50 + "\n")
+                
                 retry_count = 20
                 try:
                     while retry_count>0:
                         matches = json_pattern.findall(output_text)
                         if matches:
                             try:
-                                # 解析并保存完整的 JSON 对象
+                                # extract the json object
                                 json_obj = json.loads(matches[-1])
                                 # rating_batch[idx] = json.dumps(json_obj)
                                 rating_batch[idx] = [int(json_obj['Rarity']), int(json_obj['Complexity']), int(json_obj['Informativeness']), int(json_obj['Overall rating'])]
-                                break  # 成功提取到 JSON，退出循环
+                                break  
                             except json.JSONDecodeError:
                                 print(f"JSON Decode Error for batch data {batch_indices[idx]}")
                         else:
                             print(f"No JSON match for batch data {batch_indices[idx]}, recalculating...")
-                            # 重新运行单个 example
+                            # re-generate
                             with torch.no_grad():
                                 single_output = accelerator.unwrap_model(model).generate(
                                     input_ids=encodings['input_ids'][idx].unsqueeze(0).to(accelerator.device),
@@ -315,20 +331,17 @@ def main(
 
 
             rating_all.extend(rating_batch)
-            print(f"$$$$$$$$$$$$$ rating batch (size): {len(rating_batch)}): {rating_batch}")
-            print(f"$$$$$$$$$$$$$ rating batch's unlabel samples: {rating_batch.count(None)}")
+            print(f"Unlabeled samples size of each batch: {rating_batch.count(None)}")
+
 
         del encodings, output_text_batch, batch
         torch.cuda.empty_cache()
 
 
-    print(f"$$$$$$$$$$$$$ all unlabel samples: {rating_all.count(None)}")
+    print(f"All unlabeled samples: {rating_all.count(None)}")
     from collections import Counter
     rating_all_revise = [rating[-1] for rating in rating_all if rating is not None]
     print(f"score distribution: {Counter(rating_all_revise)}")
-    # import pdb;pdb.set_trace()
-
-
 
 
     '''load parameters'''
@@ -341,29 +354,18 @@ def main(
     if not os.path.exists(path):
         os.makedirs(path)
         
-    # torch.save(output_text_all, path + f'/output_text_all.pt')
-    # torch.save(output_labels, path + f'/output_labels.pt')
-
-
-    #####################################################################################
-
     # Barrier to ensure all processes have finished saving
     accelerator.wait_for_everyone()
     
     # Convert results to tensors and move them to CUDA device
     indices_tensor = torch.tensor([x[0] for x in results], dtype=torch.long).to(accelerator.device)
-    # text_tensor = torch.nn.utils.rnn.pad_sequence([torch.tensor(list(x[1].encode('utf-8')), dtype=torch.long) for x in results], batch_first=True, padding_value=0).to(accelerator.device)
-    
-    # rating_tensor = torch.tensor([[temp if temp > 10 or temp < 0 else 0 for temp in x[1]] 
-    #                                 for x in results
-    #                             ], dtype=torch.long).to(accelerator.device)  
-    
+
     min_val = torch.iinfo(torch.int64).min
 
     max_val = torch.iinfo(torch.int64).max
 
     rating_tensor = torch.tensor(
-                                [[min(max(val, min_val), max_val) for val in x[1]] for x in results], dtype=torch.long  # 使用 int64
+                                [[min(max(val, min_val), max_val) for val in x[1]] for x in results], dtype=torch.long  
                                     ).to(accelerator.device)
 
     rating_tensor = torch.tensor([x[1] for x in results], dtype=torch.long).to(accelerator.device)
@@ -372,7 +374,6 @@ def main(
 
     # Gather results from all processes
     all_indices = accelerator.gather(indices_tensor)
-    # all_texts = accelerator.gather(text_tensor)
     all_ratings = accelerator.gather(rating_tensor)
     all_perplexitys = accelerator.gather(perplexity_tensor)
 
@@ -385,17 +386,6 @@ def main(
         ratings_list = all_ratings.cpu().tolist()
         perplexity_list = all_perplexitys.cpu().tolist()
 
-        # for idx, text, rating in zip(indices_list, all_texts, ratings_list):
-        #     # gathered_results[idx] = (bytes(text[text != 0].cpu().numpy()).decode('utf-8'), rating)
-        #     gathered_results[idx] = (bytes(text[text != 0].cpu().numpy()).decode('utf-8', errors='replace'), rating)
-
-        # from concurrent.futures import ThreadPoolExecutor
-        # def decode_text(text):
-        #     return bytes(text[text != 0]).decode('utf-8', errors='replace')
-
-        # with ThreadPoolExecutor() as executor:
-        #     texts_decoded = list(executor.map(decode_text, [t.cpu().numpy() for t in all_texts]))
-        # gathered_results = dict(zip(indices_list, zip(texts_decoded, ratings_list)))
 
         gathered_results = dict(zip(indices_list, zip(ratings_list, perplexity_list)))
 
@@ -410,9 +400,6 @@ def main(
         output_dir = output_dir + f"{model_full_name}/{dataset_name}"
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-        # final_text_path = f'{path}/output_text_all.pt'
-
-        # assert len(output_labels) == len(dialogs)
  
         final_labels_path = f'{output_dir}/output_labels.pt'
         final_perplexity_path = f'{output_dir}/output_perplexities.pt'
@@ -429,7 +416,6 @@ def main(
 
         print("starting storing the outputs!!!")
         torch.save(sorted_results, final_results_path)
-        # torch.save(output_text_all, final_text_path)
         torch.save(output_labels, final_labels_path)
         torch.save(output_perplexities, final_perplexity_path)
 
@@ -441,10 +427,6 @@ def main(
         print("Main process is exiting...")
 
 
-
-
-
-    
 
 if __name__ == '__main__':
     fire.Fire(main)

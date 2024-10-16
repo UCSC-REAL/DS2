@@ -67,18 +67,27 @@ def main(
         torch.cuda.manual_seed(seed)
     torch.manual_seed(seed)
 
-    '''load model & tokenizer'''
+
+    '''prompt template'''
+    # full_prompt_template = ('''As a data quality estimator, your task is to assess the quality of data sample based on the criteria: Rarity, Complexity, Informativeness.
+    # Please rate the sample on a scale from 1 to 10 for each criterion, and return an overall rating on a scale from 1 to 10, where a higher score indicates higher level of quality.
+    # Ensure that the ratings are not overly concentrated around a specific score. If multiple samples have similar qualities, consider spreading the scores more evenly to reflect subtle differences.
+    # Now, please carefully evaluate the following data sample and return the integral evaluation scores using the JSON format:
+    # {
+    #     "Rarity": <number, 1-10>,
+    #     "Complexity": <number, 1-10>,
+    #     "Informativeness": <number, 1-10>,
+    #     "Overall rating": <number, 1-10>
+    # }
+    # Remember: the output must strictly follow this format, without any deviations.
+    # ''')  
     
-    if 'llama' in model_name.lower():
-        model_full_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
-        batch_size =30
-        
-        
-        pre_prompt = ('''<|begin_of_text|><|start_header_id|>system<|end_header_id|>You are a helpful assistant<|eot_id|><|start_header_id|>user<|end_header_id|>
-        As a data quality estimator, your task is to assess the quality of data sample based on the criteria: Rarity, Complexity, Informativeness.
+    system_prompt = '''As a data quality estimator, your task is to assess the quality of data sample based on the criteria: Rarity, Complexity, Informativeness.
         Please rate the sample on a scale from 1 to 10 for each criterion, and return an overall rating on a scale from 1 to 10, where a higher score indicates higher level of quality.
         Ensure that the ratings are not overly concentrated around a specific score. If multiple samples have similar qualities, consider spreading the scores more evenly to reflect subtle differences.
-        Now, please carefully evaluate the following data sample and return the integral evaluation scores using the JSON format:
+        '''
+    
+    user_prompt ='''Now, please carefully evaluate the following data sample and return the integral evaluation scores using the JSON format:
         {
             "Rarity": <number, 1-10>,
             "Complexity": <number, 1-10>,
@@ -86,69 +95,52 @@ def main(
             "Overall rating": <number, 1-10>
         }
         Remember: the output must strictly follow this format, without any deviations.
-        ''')  
-        system_prompt = "<|begin_of_text|><|start_header_id|>system<|end_header_id|>You are a helpful assistant<|eot_id|>"
-        assistant_prompt = "<|eot_id|><|start_header_id|>assistant<|end_header_id|>"
- 
-    
+        '''   
+
+
+    '''load model & tokenizer'''
+    if 'llama' in model_name.lower():
+        model_full_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+        batch_size =30
+        # chat template: https://llama.meta.com/docs/model-cards-and-prompt-formats/llama3_1/
+        prompt_template = '''
+                    <|begin_of_text|><|start_header_id|>system<|end_header_id|>{system_prompt}<|eot_id|>
+                    <|start_header_id|>user<|end_header_id|>{user_prompt} \n## Data sample (conversation):\n{conversation}<|eot_id|> 
+                    <|start_header_id|>assistant<|end_header_id|>
+                    '''
+        
     elif 'mistral' in model_name.lower():
         model_full_name = 'mistralai/Mistral-7B-Instruct-v0.3'
         batch_size = 50
-
-        model_start_tag = "<s>[INST]"
-        assistant_prompt = "[/INST]"
-        pre_prompt = ('''
-            As a data quality estimator, your task is to assess the quality of data sample based on the criteria: Rarity, Complexity, Informativeness.
-            Please rate the sample on a scale from 1 to 10 for each criterion, and return an overall rating on a scale from 1 to 10, where a higher score indicates higher level of quality.
-            Ensure that the ratings are not overly concentrated around a specific score. If multiple samples have similar qualities, consider spreading the scores more evenly to reflect subtle differences.
-            Now, please carefully evaluate the following data sample and return the integral evaluation scores using the JSON format:
-            {
-                "Rarity": <number, 1-10>,
-                "Complexity": <number, 1-10>,
-                "Informativeness": <number, 1-10>,
-                "Overall rating": <number, 1-10>
-            }
-            Remember: the output must strictly follow this format, without any deviations.
-            ''')  
+        # chat template: https://www.promptingguide.ai/models/mistral-7b
+        # chat template: <s>[INST] Instruction [/INST] Model answer</s>[INST] Follow-up instruction [/INST]
+        prompt_template = '''
+                    <s>[INST]system{system_prompt}[/INST]
+                    [INST]user{user_prompt} \n## Data sample (conversation):\n{conversation}[/INST]
+                    [INST]assistant
+                    '''    
+    
 
     elif 'gemma' in model_name.lower():
-        model_full_name = 'google/gemma-2-9b-it' #batch_size 10
+        model_full_name = 'google/gemma-2-9b-it' 
         batch_size=20
         
-        assistant_prompt = "<end_of_turn><start_of_turn>model"
-        pre_prompt = ('''
-            <bos><start_of_turn>user As a data quality estimator, your task is to assess the quality of data sample based on the criteria: Rarity, Complexity, Informativeness.
-            Please rate the sample on a scale from 1 to 10 for each criterion, and return an overall rating on a scale from 1 to 10, where a higher score indicates higher level of quality.
-            Ensure that the ratings are not overly concentrated around a specific score. If multiple samples have similar qualities, consider spreading the scores more evenly to reflect subtle differences.
-            Now, please carefully evaluate the following data sample and return the integral evaluation scores using the JSON format:
-            {
-                "Rarity": <number, 1-10>,
-                "Complexity": <number, 1-10>,
-                "Informativeness": <number, 1-10>,
-                "Overall rating": <number, 1-10>
-            }
-            Remember: the output must strictly follow this format, without any deviations.
-            ''')  
+        prompt_template = '''
+            <bos><start_of_turn>system{system_prompt}<end_of_turn>
+            <bos><start_of_turn>user{user_prompt} \n## Data sample (conversation):\n{conversation}<end_of_turn>
+            <start_of_turn>model
+            '''    
 
     elif "phi" in model_name.lower():
         model_full_name = "microsoft/Phi-3.5-mini-instruct"
         batch_size = 20
 
-        assistant_prompt = "<|end|>\n <|assistant|>" ## <|system|>You are a helpful assistant<|end|>\n
-        pre_prompt = ('''
-            <|user|>\n As a data quality estimator, your task is to assess the quality of data sample based on the criteria: Rarity, Complexity, Informativeness.
-            Please rate the sample on a scale from 1 to 10 for each criterion, and return an overall rating on a scale from 1 to 10, where a higher score indicates higher level of quality.
-            Ensure that the ratings are not overly concentrated around a specific score. If multiple samples have similar qualities, consider spreading the scores more evenly to reflect subtle differences.
-            Now, please carefully evaluate the following data sample and return the integral evaluation scores using the JSON format:
-            {
-                "Rarity": <number, 1-10>,
-                "Complexity": <number, 1-10>,
-                "Informativeness": <number, 1-10>,
-                "Overall rating": <number, 1-10>
-            }
-            Remember: the output must strictly follow this format, without any deviations.
-            ''')  
-
+        prompt_template = '''
+             <|system|>{system_prompt}<end>\n
+            <|user|>{user_prompt} \n## Data sample (conversation):\n{conversation}<end>\n
+            <|assistant|>
+            '''    
+            
     else:
         raise NotImplementedError
     
@@ -183,15 +175,9 @@ def main(
     tokenizer = AutoTokenizer.from_pretrained(model_full_name, padding_side='left',trust_remote_code=True)
     tokenizer.pad_token_id = tokenizer.eos_token_id
 
-
-    '''prompting'''
-    print("choose the prompt for model!!")
-
-    '''preprocess dataset'''
     print("Preprocessing dataset...")
     inputs= []
-    ##########################################################################################
-
+    
     tulu_subsets_list =['flan_v2', 'oasst1', 'wizardlm', 'dolly', 'stanford_alpaca']
 
     if dataset_name in tulu_subsets_list:
@@ -202,7 +188,7 @@ def main(
             conversation = ""
             for message in dialog['messages']:  #[{{'role': 'user', 'content': 'blabla'}, {'role': 'assistant', 'content': 'blabla'}]
                 conversation += f"### {message['role']}: {message['content']}\n"
-            inputs.append(pre_prompt + "## Data sample (conversation):\n" + conversation + assistant_prompt)
+            inputs.append(prompt_template.format(system_prompt, user_prompt, conversation))
     
     #load data from Huggingface
     elif 'alpaca' in dataset_name:
@@ -211,7 +197,7 @@ def main(
         dialogs = load_dataset(dataset_name)['train']
         
         for dialog in dialogs['text']:
-            inputs.append(pre_prompt + "## Data sample (conversation):\n" + dialog + assistant_prompt)
+            inputs.append(prompt_template.format(system_prompt, user_prompt, conversation))
 
     elif 'dolly' in dataset_name:        
         dataset_name = 'databricks/databricks-dolly-15k'
@@ -220,7 +206,7 @@ def main(
         
         for dialog in dialogs:
             conversation = f"### Instruction: {dialog['instruction']} ### Response: {dialog['response']}"
-            inputs.append(pre_prompt + f"## Data sample (conversation):\n" + conversation + assistant_prompt)
+            inputs.append(prompt_template.format(system_prompt, user_prompt, conversation))
 
     elif 'wizardLM' in dataset_name:
         dataset_name = 'WizardLMTeam/WizardLM_evol_instruct_V2_196k'
@@ -230,7 +216,7 @@ def main(
         for dialog in dialogs['conversations']:
             f"### Human: {dialog[0]['value']} ### Assistant: {dialog[1]['value']}"
             conversation =  f"### Human: {dialog[0]['value']} ### Assistant: {dialog[1]['value']}"
-            inputs.append(pre_prompt + f"## Data sample (conversation):\n" + conversation + assistant_prompt)
+            inputs.append(prompt_template.format(system_prompt, user_prompt, conversation))
 
     else:
         print("Dataset can not be found!")
@@ -287,7 +273,7 @@ def main(
                         matches = json_pattern.findall(output_text)
                         if matches:
                             try:
-                                # extract the json obeject
+                                # extract the json object
                                 json_obj = json.loads(matches[-1])
                                 # rating_batch[idx] = json.dumps(json_obj)
                                 rating_batch[idx] = [int(json_obj['Rarity']), int(json_obj['Complexity']), int(json_obj['Informativeness']), int(json_obj['Overall rating'])]

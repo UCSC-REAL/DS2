@@ -13,8 +13,8 @@ MODEL_NAME="microsoft/Phi-3.5-mini-instruct"
 # DATASET_LIST=('flan_v2' 'oasst1' 'wizardlm' 'dolly' 'stanford_alpaca') # full data list
 DATASET_LIST=('dolly') 
 
-OUTPUT_DIR='../scoring-info-local-with-perplexity/'
-LOG_FILE='../scoring_local.log'
+OUTPUT_DIR='scoring_output_with_perplexity/'
+LOG_FILE='scoring_local.log'
 mkdir -p $OUTPUT_DIR
 
 ## clear the log file

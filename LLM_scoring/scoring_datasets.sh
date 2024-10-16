@@ -13,7 +13,7 @@ DATASET_LIST=('flan_v2')
 
 
 
-OUTPUT_DIR="/mnt/azureml/crunch/outputs/"
+OUTPUT_DIR="scoring_output/"
 mkdir -p $OUTPUT_DIR
 
 for DATASET_NAME in "${DATASET_LIST[@]}"; do
@@ -31,9 +31,6 @@ for DATASET_NAME in "${DATASET_LIST[@]}"; do
     sleep 10 # for release the port 29500
 done
 
-
-AZURE_STORAGE_CONTAINER_URL="https://afminternshipuksouth.blob.core.windows.net/jinlong/output/?sp=racwdlmeop&st=2024-08-24T00:58:39Z&se=2025-04-03T08:58:39Z&sv=2022-11-02&sr=c&sig=rbf41XiVlLJw76zeillA%2FRMAjgGMo2lQHO3m3RW5Ho8%3D"
-azcopy copy "$OUTPUT_DIR/*" "$AZURE_STORAGE_CONTAINER_URL" --recursive
 
 
 
