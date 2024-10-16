@@ -12,9 +12,9 @@ In this project, we analyze the error patterns in LLM-generated scores and propo
 
 ## Step 1. LLM-prompt-based Rating
 
-In this project, we use three labeling models to generate rating scores, including GPT-4o-mini, Mistral-7B-Instruct-v0.3, LLaMA-3.1-8B-Instruct.  In particular, we can use the GPT API call to generate the model answers by executing the code 
+In this project, we use three labeling models to generate rating scores, including GPT-4o-mini, Mistral-7B-Instruct-v0.3, LLaMA-3.1-8B-Instruct.  In particular, we can use the GPT API call to generate the model answers by executing the code located in the `LLM_scoring` path: 
 ```
-LLM_Scoring/labeling_datasets_api.sh
+bash labeling_datasets_api.sh
 ``` 
 For open-source models such as LLaMA and Mistral, one can submit the jobs via launcher to the cluster, i.e., 
 ```
