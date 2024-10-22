@@ -21,7 +21,7 @@ and
 ```
 bash model_finetune_cluster/scripts/prepare_train_data.sh
 ```
-to download the evaluation and original training data.
+to download the evaluation and original training data. Our selected evaluation and training data are listed below.
 
 | **Category**         | **Dataset**                                  |
 |----------------------|----------------------------------------------|
