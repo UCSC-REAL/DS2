@@ -8,9 +8,9 @@ However, like human annotations, these machine-generated labels (scores) may sti
 Applying these raw labels directly in the data selection process without considering the potential label noise may result in a sub-optimal case.
 In this project, we analyze the error patterns in LLM-generated scores and propose a novel data selection pipeline to enhance machine alignment. Our method incorporates label curation and noise reduction techniques over LLM scored data, meanwhile, considers the rareness of the data sample to improve both the accuracy and richness of the selected data. Empirical results demonstrate that our approach not only outperforms existing methods as well as full吃的 data training, but also reduces reliance on costly expert-driven models, achieving a more efficient and reliable alignment process.
 
-## Training Data Preperation
+## Training Data Preparation
 
-We follow the code base from [TULU]{https://github.com/allenai/open-instruct}. One can use
+We follow the code base from [TULU](https://github.com/allenai/open-instruct). One can use
 
 ```
 bash model_finetune_cluster/scripts/prepare_eval_data.sh
@@ -67,9 +67,16 @@ In particular, we use `new_dataset_score_curation.ipynb` to generate subset afte
 Given the selected subsets in the path `model_finetune_cluster/new_train_data/`, one can use the code base from [TULU](https://github.com/allenai/open-instruct) to finetune base models (Mistral or LLaMA) and then do evaluation.
 In particular, one can submit the jobs via launcher under the path `model_finetune_cluster/`. For example, one can submit the job by running the code 
 ```
-launcher run job_pipeline_all.yaml
+cd model_finetune_cluster/ && launcher run job_pipeline_all.yaml
 ```
-Models and evaluation results are stored in the [Azure StorageAccount](https://portal.azure.com/#view/Microsoft_Azure_Storage/ContainerMenuBlade/~/overview/storageAccountId/%2Fsubscriptions%2F6184c5ce-cd29-4d42-bbcc-0fb06a3f97f1%2FresourceGroups%2FACCLLM%2Fproviders%2FMicrosoft.Storage%2FstorageAccounts%2Fafminternshipuksouth/path/jinlong/etag/%220x8DCAC3F12DEAFFE%22/defaultEncryptionScope/%24account-encryption-key/denyEncryptionScopeOverride~/false/defaultId//publicAccessVal/None)  One can present the final result by running 
+Models and evaluation results are stored in the [Azure StorageAccount](https://portal.azure.com/#view/Microsoft_Azure_Storage/ContainerMenuBlade/~/overview/storageAccountId/%2Fsubscriptions%2F6184c5ce-cd29-4d42-bbcc-0fb06a3f97f1%2FresourceGroups%2FACCLLM%2Fproviders%2FMicrosoft.Storage%2FstorageAccounts%2Fafminternshipuksouth/path/jinlong/etag/%220x8DCAC3F12DEAFFE%22/defaultEncryptionScope/%24account-encryption-key/denyEncryptionScopeOverride~/false/defaultId//publicAccessVal/None). 
+
+Futhermore, we can also execute the code locally, e.g.,  
+```
+cd model_finetune_cluster/ && bash  run_pipeline_all.sh
+```
+
+One can present the final result by running 
 ```
 python model_finetune_cluster/read_results.py
 ```
