@@ -58,7 +58,7 @@ The corresponding curation report files could be found in the path `./score_cura
 ## Step 3. Data Selection including baselines
 Given the existing score curation reports, one can directly use the following jupyter notebooks to do data selection including all baselines: `new_dataset_all.ipynb`. The generated subsets can be further used for LLM instruction tuning. Other selected datasets used for ablation study can be also generated from the following jupyter notebooks located in the `./score_curation` path: `new_dataset_label_curation.ipynb` and `new_dataset_data_scale.ipynb`.
 
-We implement nine baselines consists of random, perplexity, knn, [less](https://github.com/princeton-nlp/LESS), completion_length, full data, [alpagasus](https://github.com/Lichang-Chen/AlpaGasus/tree/main) (label-filtered), [deita](https://github.com/hkust-nlp/deita) (diversity-filtered), ours w/o. curation and ours.
+We implement nine baselines consists of Random, Perplexity, KNN, [LESS](https://github.com/princeton-nlp/LESS), Completion_length, Full data, [Alpagasus](https://github.com/Lichang-Chen/AlpaGasus/tree/main) (label-filtered), [DEITA](https://github.com/hkust-nlp/deita) (diversity-filtered), Ours w/o. curation and Ours.
 In particular, we use `new_dataset_score_curation.ipynb` to generate subset after curating machine-generated raw scores.
 
 
@@ -73,7 +73,7 @@ Models and evaluation results are stored in the [Azure StorageAccount](https://p
 
 Futhermore, we can also execute the code locally, e.g.,  
 ```
-cd model_finetune_cluster/ && bash  run_pipeline_all.sh
+cd model_finetune_cluster/ && bash run_pipeline_all.sh
 ```
 
 One can present the final result by running 
