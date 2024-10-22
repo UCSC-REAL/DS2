@@ -8,6 +8,25 @@ However, like human annotations, these machine-generated labels (scores) may sti
 Applying these raw labels directly in the data selection process without considering the potential label noise may result in a sub-optimal case.
 In this project, we analyze the error patterns in LLM-generated scores and propose a novel data selection pipeline to enhance machine alignment. Our method incorporates label curation and noise reduction techniques over LLM scored data, meanwhile, considers the rareness of the data sample to improve both the accuracy and richness of the selected data. Empirical results demonstrate that our approach not only outperforms existing methods as well as full吃的 data training, but also reduces reliance on costly expert-driven models, achieving a more efficient and reliable alignment process.
 
+## Training Data Preperation
+
+We follow the code base from [TULU]{https://github.com/allenai/open-instruct}. One can use
+
+```
+bash model_finetune_cluster/scripts/prepare_eval_data.sh
+```
+
+and 
+
+```
+bash model_finetune_cluster/scripts/prepare_train_data.sh
+```
+to download the evaluation and original training data.
+
+| **Category**         | **Dataset**                                  |
+|----------------------|----------------------------------------------|
+| **Evaluation Data**   | MMLU, TruthfulQA, GSM, BBH, TydiQA           |
+| **Training Data**     | Flan v2, OASST1, WizardLM, Dolly, Stanford Alpaca |
 
 
 ## Step 1. LLM-prompt-based Rating
