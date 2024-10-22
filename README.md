@@ -33,15 +33,15 @@ to download the evaluation and original training data.
 
 In this project, we use three labeling models to generate rating scores, including GPT-4o-mini, Mistral-7B-Instruct-v0.3, LLaMA-3.1-8B-Instruct.  In particular, we can use the GPT API call to generate the model answers by executing the code located in the `LLM_scoring` path: 
 ```
-bash labeling_datasets_api.sh
+cd LLM_scoring && bash labeling_datasets_api.sh
 ``` 
 For open-source models such as LLaMA and Mistral, one can submit the jobs via launcher to the cluster, i.e., 
 ```
-launcher run job_labeling.yaml
+cd LLM_scoring && launcher run job_labeling.yaml
 ``` 
 or generate scores locally using 
 ```
-bash scoring_datasets_local.sh
+cd LLM_scoring && bash scoring_datasets_local.sh
 ```
 
 
@@ -49,7 +49,7 @@ bash scoring_datasets_local.sh
 ## Step 2. Score Curation Method
 Th label curation code base is from [Docta](https://github.com/Docta-ai/docta) in the `./score_curation` path. One can execute the score curation by running
 ```
-bash diagnose_tulu.sh
+cd score_curation && bash diagnose_tulu.sh
 ```
 The corresponding curation report files could be found in the path `./score_curation/results`.
 
