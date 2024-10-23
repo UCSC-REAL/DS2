@@ -1,8 +1,4 @@
-# Intern Project: Improving Data Efficiency via Curating LLM-Driven Rating Systems 
-
----
-
-## LLM Data Selection Pipeline
+# LLM Data Selection Pipeline
 More recent methods have begun to directly leverage the most powerful LLM GPT-4 as data selectors, utilizing their ability to score and filter large-scale datasets with greater precision. 
 However, like human annotations, these machine-generated labels (scores) may still be inaccurate or contain LLM-level biases.
 Applying these raw labels directly in the data selection process without considering the potential label noise may result in a sub-optimal case.
@@ -23,18 +19,27 @@ bash model_finetune_cluster/scripts/prepare_train_data.sh
 ```
 to download the evaluation and original training data. Our selected evaluation and training data are listed below.
 
-<!-- | **Category**         | **Dataset**                                  |
+| **Category**         | **Dataset**                                  |
 |----------------------|----------------------------------------------|
 | **Evaluation Data**   | MMLU, TruthfulQA, GSM, BBH, TydiQA           |
-| **Training Data**     | Flan v2, OASST1, WizardLM, Dolly, Stanford Alpaca | -->
+| **Training Data**     | Flan v2, OASST1, WizardLM, Dolly, Stanford Alpaca |
 
-| **Evaluation Data**              | **Original Training Data**         |
+<!-- | **Evaluation Data**              | **Original Training Data**         |
 |:--------------------------------:|:----------------------------------:|
 | MMLU                             | Flan v2                            |
 | TruthfulQA                       | OASST1                             |
 | GSM                              | WizardLM                           |
 | BBH                              | Dolly                              |
-| TydiQA                           | Stanford Alpaca                    |
+| TydiQA                           | Stanford Alpaca                    | -->
+
+## Setup
+To run training, evaluation, or inference for finetuned models, you need to install the required packages by running the following command (after installing pytorch):
+```
+pip install -r requirements.txt
+```
+
+
+
 
 ## Step 1. LLM-prompt-based Rating
 
