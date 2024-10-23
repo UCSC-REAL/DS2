@@ -84,3 +84,15 @@ python model_finetune_cluster/read_results.py
 
 ## Final Results 
 The final results of LLM judging compared with human-annotated dataset LIMA can be found in `lima_plot.ipynb`. Moreover, for the tabular results, one can check the `reading_results.ipynb` jupyter notebook.
+
+
+## Citation
+If you used this repository, please cite our work:
+```
+@article{pang2024improving,
+  title={Improving Data Efficiency via Curating LLM-Driven Rating Systems},
+  author={Pang, Jinlong and Wei, Jiaheng and Shah, Ankit Parag and Zhu, Zhaowei and Wang, Yaxuan and Qian, Chen and Liu, Yang and Bao, Yujia and Wei, Wei},
+  journal={arXiv preprint arXiv:2410.10877},
+  year={2024}
+}
+```
