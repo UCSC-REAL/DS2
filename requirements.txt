@@ -6,7 +6,6 @@ torchvision
 pandas
 scikit-learn
 open_clip_torch==2.18.0
-
 scipy
 packaging
 sentencepiece
