@@ -23,11 +23,18 @@ bash model_finetune_cluster/scripts/prepare_train_data.sh
 ```
 to download the evaluation and original training data. Our selected evaluation and training data are listed below.
 
-| **Category**         | **Dataset**                                  |
+<!-- | **Category**         | **Dataset**                                  |
 |----------------------|----------------------------------------------|
 | **Evaluation Data**   | MMLU, TruthfulQA, GSM, BBH, TydiQA           |
-| **Training Data**     | Flan v2, OASST1, WizardLM, Dolly, Stanford Alpaca |
+| **Training Data**     | Flan v2, OASST1, WizardLM, Dolly, Stanford Alpaca | -->
 
+| **Evaluation Data**              | **Original Training Data**         |
+|:--------------------------------:|:----------------------------------:|
+| MMLU                             | Flan v2                            |
+| TruthfulQA                       | OASST1                             |
+| GSM                              | WizardLM                           |
+| BBH                              | Dolly                              |
+| TydiQA                           | Stanford Alpaca                    |
 
 ## Step 1. LLM-prompt-based Rating
 
