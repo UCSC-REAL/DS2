@@ -6,7 +6,7 @@ In this project, we analyze the error patterns in LLM-generated scores and propo
 
 ## Training Data Preparation
 
-We follow the code base from [TULU](https://github.com/allenai/open-instruct). One can use
+We follow the code base from [TULU](https://github.com/allenai/open-instruct). One can download the evaluation and original training data by running
 
 ```
 bash model_finetune_cluster/scripts/prepare_eval_data.sh
@@ -17,7 +17,7 @@ and
 ```
 bash model_finetune_cluster/scripts/prepare_train_data.sh
 ```
-to download the evaluation and original training data. Our selected evaluation and training data are listed below.
+Our selected evaluation and training data are listed below.
 
 | **Category**         | **Dataset**                                  |
 |----------------------|----------------------------------------------|
