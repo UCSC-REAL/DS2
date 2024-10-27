@@ -37,8 +37,8 @@ from peft import LoraConfig, TaskType, get_peft_model, prepare_model_for_kbit_tr
 
 
 
-cache_dir = '/tmp/huggingface/hub/'
-os.makedirs(cache_dir, exist_ok=True)
+# cache_dir = '/tmp/huggingface/hub/'
+# os.makedirs(cache_dir, exist_ok=True)
 
 # cache_dir=None
 
@@ -510,7 +510,7 @@ def main():
             use_fast=not args.use_slow_tokenizer,
             revision=tokenizer_revision,
             token=os.getenv("HF_TOKEN", None),
-            cache_dir=cache_dir,
+            # cache_dir=cache_dir,
 
             
         )
@@ -521,7 +521,7 @@ def main():
             use_fast=not args.use_slow_tokenizer,
             revision=tokenizer_revision,
             token=os.getenv("HF_TOKEN", None),
-            cache_dir=cache_dir
+            # cache_dir=cache_dir
 
         )
     else:
@@ -555,7 +555,7 @@ def main():
                 use_flash_attention_2=True if args.use_flash_attn else False,
                 revision=args.model_revision,
                 token=os.getenv("HF_TOKEN", None),
-                cache_dir=cache_dir,
+                # cache_dir=cache_dir,
             )
         else:
             model = AutoModelForCausalLM.from_pretrained(
@@ -567,7 +567,7 @@ def main():
                 use_flash_attention_2=True if args.use_flash_attn else False,
                 revision=args.model_revision,
                 token=os.getenv("HF_TOKEN", None),
-                cache_dir=cache_dir,
+                # cache_dir=cache_dir,
                 # device_map = 'auto', ####@jlpang
 
             )

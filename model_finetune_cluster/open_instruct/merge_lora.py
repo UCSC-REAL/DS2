@@ -8,9 +8,8 @@ import copy
 from bitsandbytes.functional import dequantize_4bit
 from peft.utils import _get_submodules
 
-# cache_dir = None
-
-cache_dir = '/tmp/huggingface/hub/'
+# cache_dir = '/tmp/huggingface/hub/'
+# os.makedirs(cache_dir, exist_ok=True)
 
 # cache_dir=None
 
@@ -76,30 +75,28 @@ if __name__ == "__main__":
             torch_dtype=torch.bfloat16,
             quantization_config=quantization_config,
             device_map={"": 0} if torch.cuda.is_available() else None,
-            cache_dir=cache_dir,
+            # cache_dir=cache_dir,
         )
         print("###### Starting dequantize model...")
-        # import pdb;pdb.set_trace()
         # base_model = dequantize_model(base_model, device=base_model.device)
-        # import pdb;pdb.set_trace()
         base_model = dequantize_model(base_model, device="cpu")
     else:
         base_model = AutoModelForCausalLM.from_pretrained(
             args.base_model_name_or_path if args.base_model_name_or_path else peft_config.base_model_name_or_path,
-            cache_dir=cache_dir,
+            # cache_dir=cache_dir,
         )
 
     # If tokenizer is specified, use it. Otherwise, use the tokenizer in the lora model folder or the base model folder.
     if args.tokenizer_name_or_path:
         print(f"Loading the tokenizer from {args.tokenizer_name_or_path}...")
-        tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_name_or_path, use_fast=args.use_fast_tokenizer, cache_dir=cache_dir)
+        tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_name_or_path, use_fast=args.use_fast_tokenizer)#, cache_dir=cache_dir)
     else:
         try:
             print("Trying to load the tokenizer in the lora model folder...")
-            tokenizer = AutoTokenizer.from_pretrained(args.lora_model_name_or_path, use_fast=args.use_fast_tokenizer,cache_dir=cache_dir)
+            tokenizer = AutoTokenizer.from_pretrained(args.lora_model_name_or_path, use_fast=args.use_fast_tokenizer)#,cache_dir=cache_dir)
         except:
             print("No tokenizer found in the lora model folder. Using the tokenizer in the base model folder...")
-            tokenizer = AutoTokenizer.from_pretrained(args.base_model_name_or_path, use_fast=args.use_fast_tokenizer, cache_dir=cache_dir,)
+            tokenizer = AutoTokenizer.from_pretrained(args.base_model_name_or_path, use_fast=args.use_fast_tokenizer)#, cache_dir=cache_dir,)
 
 
     # import pdb;pdb.set_trace()
