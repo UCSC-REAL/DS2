@@ -23,7 +23,7 @@ labeling_model="meta-llama/Meta-Llama-3.1-8B-Instruct"
 
 declare -A base_models
 # base_models["meta-llama/Llama-2-7b-hf"]="128 1 4096"  
-base_models["meta-llama/Meta-Llama-3.1-8B"]="8 1 64" # TOTAL_BATCH_SIZE BATCH_SIZE_PER_GPU max_seq_length
+base_models["meta-llama/Meta-Llama-3.1-8B"]="128 2 2048" # TOTAL_BATCH_SIZE BATCH_SIZE_PER_GPU max_seq_length
 # base_models["mistralai/Mistral-7B-v0.3"]="128 1 2048"
 
 
@@ -48,6 +48,7 @@ data_types=('less')
 #############################################################
 ######## model finetuning on selected training data ######### 
 #############################################################
+
 
 echo "###### All data types here:: ${data_types[@]}"
 echo "###### All training datasets here:: ${TRAIN_DATASET_LIST[@]}"
@@ -93,17 +94,19 @@ do
             echo "Training ${base_model} using $NUM_GPUS GPUs, $BATCH_SIZE_PER_GPU batch size per GPU, $GRADIENT_ACC_STEPS gradient accumulation steps"
             echo "Training data path: ${train_data}"
 
-            ### Lora training
+            ### Lora training                 
+            # --deepspeed_config_file ds_configs/stage3_no_offloading_accelerate.conf \
+            # --use_qlora \
+
             accelerate launch \
                 --mixed_precision bf16 \
                 --num_machines 1 \
                 --num_processes $NUM_GPUS \
-                --deepspeed_config_file ds_configs/stage3_no_offloading_accelerate.conf \
                 open_instruct/finetune.py \
                 --model_name_or_path $base_model \
                 --gradient_checkpointing \
-                --use_qlora \
                 --use_lora \
+                --use_qlora \
                 --lora_rank 64 \
                 --lora_alpha 16 \
                 --lora_dropout 0.1 \
@@ -130,12 +133,12 @@ do
                 --lora_model_name_or_path $cluster_root_path/models/${labeling_model}/${train_dataset_name}/${base_model}/lora_${data_type}/ \
                 --output_dir $cluster_root_path/models/${labeling_model}/${train_dataset_name}/${base_model}/lora_merged_${data_type}/ \
                 --save_tokenizer \
-                --use_qlora \
+                --qlora 
 
 
             sleep 10s
 
-            rm -rf $cluster_root_path/models/${labeling_model}/${train_dataset_name}/${base_model}/lora_${data_type}/
+            rm -rf $cluster_root_path/models/${labeling_model}/${train_dataset_name}/${base_model}/lora_${data_type}
 
         done
     done

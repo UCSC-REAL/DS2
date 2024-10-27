@@ -135,7 +135,7 @@ do
 
             sleep 10s
 
-            rm -rf $cluster_root_path/models/${labeling_model}/${train_dataset_name}/${base_model}/lora_${data_type}/
+            rm -rf $cluster_root_path/models/${labeling_model}/${train_dataset_name}/${base_model}/lora_${data_type}
 
         done
     done
