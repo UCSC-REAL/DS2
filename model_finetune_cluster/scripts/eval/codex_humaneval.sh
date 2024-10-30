@@ -1,72 +1,18 @@
 # Here we use 1 GPU for demonstration, but you can use multiple GPUs and larger eval_batch_size to speed up the evaluation.
-# export CUDA_VISIBLE_DEVICES=2
-
-# good_labels_finetuned_model='./output/tulu_flan_v2_7B_lora_merged_filtered_good_labels/'
-# bad_labels_finetuned_model='./output/tulu_flan_v2_7B_lora_merged_filtered_bad_labels/'
-# llama_7B_model='meta-llama/Llama-2-7b-hf'
-
-
-# # Evaluating llama 7B model using temperature 0.1 to get the pass@1 score
-# python -m eval.codex_humaneval.run_eval \
-#     --data_file raw_data/eval/codex_humaneval/HumanEval.jsonl.gz \
-#     --eval_pass_at_ks 1 5 10 20 \
-#     --unbiased_sampling_size_n 20 \
-#     --temperature 0.1 \
-#     --save_dir results/codex_humaneval/llama_7B_temp_0_1_normal \
-#     --model $llama_7B_model \
-#     --tokenizer $llama_7B_model \
-
 ############################################################################################################
 eval_dataset_name='codex_humaneval'
 
-train_dataset_name='tulu'
-labeling_model='meta/llama-3.1-8b-instruct/'
+train_dataset_name=$1
+labeling_model=$2
+base_model=$3
+# models=$4
+# save_dirs=$5
+# cuda_devices=$6
 
-# output/tulu_${dataset_name}_7B_lora_merged_${data_type}_${labeling_model}/ template
-
-filtered_finetuned_model="output/tulu_${train_dataset_name}_7B_lora_merged_filtered_${labeling_model}" ## 6.6k
-random_finetuned_model="output/tulu_${train_dataset_name}_7B_lora_merged_random_${labeling_model}"  # 6.6k
-diversity_finetuned_model="output/tulu_${train_dataset_name}_7B_lora_merged_diversity-filtered_${labeling_model}"
-label_finetuned_model="output/tulu_${train_dataset_name}_7B_lora_merged_label-filtered_${labeling_model}"
-
-llama_7B_model='meta-llama/Llama-2-7b-hf'
-full_finetuned_model="output/tulu_v2_7B_lora_merged_full_data"
-
-# 模型和tokenizer路径
-declare -A models
-models=(
-  # ["filtered"]=$filtered_finetuned_model
-  ["random"]=$random_finetuned_model
-#   ["full"]=$full_finetuned_model
-  # ["label"]=$label_finetuned_model
-#   ["base"]=$llama_7B_model
-# ['diversity']=$diversity_finetuned_model
-)
-
-declare -A save_dirs
-save_dirs=(
-  ["filtered"]=results/${eval_dataset_name}/llama2-7B-filtered
-  ["random"]=results/${eval_dataset_name}/llama2-7B-random
-  ["full"]=results/${eval_dataset_name}/llama2-7B-full
-["label"]=results/${eval_dataset_name}/llama2-7B-label
-  ["base"]=results/${eval_dataset_name}/llama2-7B-base
-  ["diversity"]=results/${eval_dataset_name}/llama2-7B-diversity
-)
-
-
-
-# CUDA 设备
-declare -A cuda_devices
-cuda_devices=(
-  ["filtered"]=0
-  ["random"]=3
-  ["full"]=2
-    ["label"]=3
-  ["base"]=3
-  ["diversity"]=0
-)
-
-# sleep 7h
+# 恢复传递的数组
+eval "$4"
+eval "$5"
+eval "$6"
 
 for key in "${!models[@]}"; do
     CUDA_VISIBLE_DEVICES=${cuda_devices[$key]} nohup python -m eval.codex_humaneval.run_eval \
@@ -78,6 +24,8 @@ for key in "${!models[@]}"; do
     --model ${models[$key]} \
     --tokenizer ${models[$key]} > ./logs/llama_${eval_dataset_name}_${key}.log &
 done
+
+
 ############################################################################################################
 # llama_7B_model='meta-llama/Llama-2-7b-hf'
 # # # Evaluating llama 7B model using temperature 0.1 to get the pass@1 score

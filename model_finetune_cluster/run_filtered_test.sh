@@ -157,7 +157,7 @@ for train_dataset_name in "${TRAIN_DATASET_LIST[@]}"; do
         echo "###### Processing data type:: ${data_type}"
 
         ####MMLU: factual knowledge
-        #### ./scripts/eval-new/mmlu.sh "$train_dataset_name" "$labeling_model" "$base_model" "$models" "$save_dirs" "$cuda_devices"
+        #### ./scripts/eval/mmlu.sh "$train_dataset_name" "$labeling_model" "$base_model" "$models" "$save_dirs" "$cuda_devices"
         
         eval_dataset_name='mmlu'
         local_save_dir=results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
@@ -171,7 +171,7 @@ for train_dataset_name in "${TRAIN_DATASET_LIST[@]}"; do
         --eval_batch_size 8  &
 
         # # ### reasoning
-        # # ./scripts/eval-new/gsm.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
+        # # ./scripts/eval/gsm.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
         
         eval_dataset_name='gsm'
         local_save_dir=results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
@@ -186,7 +186,7 @@ for train_dataset_name in "${TRAIN_DATASET_LIST[@]}"; do
             --use_vllm &
 
         # BBH: 
-        ## ./scripts/eval-new/bbh.sh "$train_dataset_name" "$labeling_model" "$base_model"  "${!models[@]}" "${!save_dirs[@]}" "$cuda_devices"
+        ## ./scripts/eval/bbh.sh "$train_dataset_name" "$labeling_model" "$base_model"  "${!models[@]}" "${!save_dirs[@]}" "$cuda_devices"
        
         eval_dataset_name='bbh'
         local_save_dir=results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
@@ -200,7 +200,7 @@ for train_dataset_name in "${TRAIN_DATASET_LIST[@]}"; do
             --use_vllm &
 
         # # ### truthfulness
-        # # ./scripts/eval-new/truthfulqa.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
+        # # ./scripts/eval/truthfulqa.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
         
         eval_dataset_name='truthfulqa'
         local_save_dir=results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
@@ -219,7 +219,7 @@ for train_dataset_name in "${TRAIN_DATASET_LIST[@]}"; do
 
 
         # # # # ### multilinguality
-        # # # # ./scripts/eval-new/tydiqa.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
+        # # # # ./scripts/eval/tydiqa.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
         
         eval_dataset_name='tydiqa'
         local_save_dir=results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
