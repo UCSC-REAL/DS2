@@ -6,7 +6,7 @@ In this project, we analyze the error patterns in LLM-generated scores and propo
 
 ## Dataset preparation
 
-We follow the code base from [TULU](https://github.com/allenai/open-instruct). One can download the evaluation and original training data by running
+We follow the code base from [TULU](https://github.com/allenai/open-instruct). You can download the evaluation and original training data by running
 
 ```
 bash model_finetune_cluster/scripts/prepare_eval_data.sh
@@ -47,7 +47,7 @@ In this project, we use three labeling models to generate rating scores, includi
 ```
 cd LLM_scoring && bash labeling_datasets_api.sh
 ``` 
-For open-source models such as LLaMA and Mistral, one can submit the jobs via launcher to the cluster, i.e., 
+For open-source models such as LLaMA and Mistral, you can submit the jobs via launcher to the cluster, i.e., 
 ```
 cd LLM_scoring && launcher run job_labeling.yaml
 ``` 
@@ -59,7 +59,7 @@ cd LLM_scoring && bash scoring_datasets_local.sh
 
 
 ## Step 2. Score curation method
-Th label curation code base is from [Docta](https://github.com/Docta-ai/docta) in the `./score_curation` path. One can execute the score curation by running
+Th label curation code base is from [Docta](https://github.com/Docta-ai/docta) in the `./score_curation` path. You can execute the score curation by running
 ```
 cd score_curation && bash diagnose_tulu.sh
 ```
@@ -68,16 +68,16 @@ The corresponding curation report files could be found in the path `./score_cura
 
 
 ## Step 3. Data selection strategy
-Given the existing score curation reports, one can directly use the following jupyter notebooks to do data selection including all baselines: `new_dataset_all.ipynb`. The generated subsets can be further used for LLM instruction tuning. Other selected datasets used for ablation study can be also generated from the following jupyter notebooks located in the `./score_curation` path: `new_dataset_label_curation.ipynb` and `new_dataset_data_scale.ipynb`.
+Given the existing score curation reports, you can directly use the following jupyter notebooks to do data selection including all baselines: `data_gen_baselines_all.ipynb`. The generated subsets can be further used for LLM instruction tuning. Other selected datasets used for ablation study can be also generated from the following jupyter notebooks located in the `./score_curation` path: `data_gen_label_curation.ipynb` and `data_gen_data_scale.ipynb`.
 
 We implement nine baselines consists of Random, Perplexity, KNN, [LESS](https://github.com/princeton-nlp/LESS), Completion_length, Full data, [Alpagasus](https://github.com/Lichang-Chen/AlpaGasus/tree/main) (label-filtered), [DEITA](https://github.com/hkust-nlp/deita) (diversity-filtered), Ours w/o. curation and Ours.
-In particular, we use `new_dataset_score_curation.ipynb` to generate subset after curating machine-generated raw scores.
+In particular, we use `data_gen_score_curation.ipynb` to generate subset after curating machine-generated raw scores.
 
 
 
 ## Step 4. Finetune & Evaluation
-Given the selected subsets in the path `model_finetune_cluster/new_train_data/`, one can use the code base from [TULU](https://github.com/allenai/open-instruct) to finetune base models (Mistral or LLaMA) and then do evaluation.
-In particular, one can submit the jobs via launcher under the path `model_finetune_cluster/`. For example, one can submit the job by running the code 
+Given the selected subsets in the path `model_finetune_cluster/new_train_data/`, you can use the code base from [TULU](https://github.com/allenai/open-instruct) to finetune base models (Mistral or LLaMA) and then do evaluation.
+In particular, you can submit the jobs via launcher under the path `model_finetune_cluster/`. For example, you can submit the job by running the code 
 ```
 cd model_finetune_cluster/ && launcher run job_pipeline_all.yaml
 ```
@@ -88,14 +88,14 @@ Futhermore, we can also execute the code locally, e.g.,
 cd model_finetune_cluster/ && bash run_pipeline_all.sh
 ```
 
-One can present the final result by running 
+You can present the final result by running 
 ```
 python model_finetune_cluster/read_results.py
 ```
 
 
 ## Final results 
-The final results of LLM judging compared with human-annotated dataset LIMA can be found in `lima_plot.ipynb`. Moreover, for the tabular results, one can check the `reading_results.ipynb` jupyter notebook.
+The final results of LLM judging compared with human-annotated dataset LIMA can be found in `lima_compare_plot.ipynb`. Moreover, for the tabular results, you can check the `reading_results.ipynb` jupyter notebook.
 
 
 ## Citation

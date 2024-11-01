@@ -1,8 +1,8 @@
 #!/bin/bash
 
-export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6
 
-NUM_GPUS=6
+NUM_GPUS=7
 # TRAIN_DATASET_LIST=('flan_v2' 'oasst1' 'wizardlm' 'dolly' 'stanford_alpaca' 'all_train') # full data list
 
 TRAIN_DATASET_LIST=('all_train') 
@@ -40,8 +40,10 @@ base_models["meta-llama/Meta-Llama-3.1-8B"]="128 2 2048" # TOTAL_BATCH_SIZE BATC
 # data_types=( 'completion' 'perplexity' 'knn' 'less' 'full' 'random' 'label-filtered' 'diversity-filtered' 'filtered' ) #baselines
 
 
-data_types=('less-gsm')
-# data_types=('less-bbh' 'less-gsm' 'less-mmlu' 'less-truthfulqa' 'less-tydiqa')
+# data_types=('less')
+# data_types=('less' 'less-bbh' 'less-gsm' 'less-mmlu' 'less-truthfulqa' 'less-tydiqa')
+# data_types=('less-bbh-half' 'less-gsm-half' 'less-mmlu-half' 'less-truthfulqa-half' 'less-tydiqa-half')
+data_types=('less-mmlu-half' 'less-truthfulqa-half' 'less-tydiqa-half')
 
 # data_types=('test')
 #############################################################
@@ -53,7 +55,9 @@ echo "###### All data types here:: ${data_types[@]}"
 echo "###### All training datasets here:: ${TRAIN_DATASET_LIST[@]}"
 
 
-cluster_root_path="output" ## . for local
+# cluster_root_path="output" ## . for local
+
+cluster_root_path="/mnt/server0-A/jinlong/less-output" ##  
 
 mkdir -p $cluster_root_path
 
@@ -168,7 +172,7 @@ for base_model in "${!base_models[@]}"; do
 
             echo "###### Processing data type:: ${data_type}"
 
-            ###MMLU: factual knowledge
+            ##MMLU: factual knowledge
             ### ./scripts/eval/mmlu.sh "$train_dataset_name" "$labeling_model" "$base_model" "$models" "$save_dirs" "$cuda_devices"
             
             eval_dataset_name='mmlu'
@@ -182,8 +186,8 @@ for base_model in "${!base_models[@]}"; do
             --tokenizer_name_or_path  $model_name_or_path \
             --eval_batch_size 8  &
 
-            # # ### reasoning
-            # # ./scripts/eval/gsm.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
+            # ### reasoning
+            #### ./scripts/eval/gsm.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
             
             eval_dataset_name='gsm'
             local_save_dir=${cluster_root_path}/results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
@@ -197,8 +201,8 @@ for base_model in "${!base_models[@]}"; do
                 --n_shot 8 \
                 --use_vllm &
 
-            #### BBH: 
-            ## ./scripts/eval/bbh.sh "$train_dataset_name" "$labeling_model" "$base_model"  "${!models[@]}" "${!save_dirs[@]}" "$cuda_devices"
+            ### BBH: 
+            #### ./scripts/eval/bbh.sh "$train_dataset_name" "$labeling_model" "$base_model"  "${!models[@]}" "${!save_dirs[@]}" "$cuda_devices"
         
             eval_dataset_name='bbh'
             local_save_dir=${cluster_root_path}/results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
@@ -211,8 +215,8 @@ for base_model in "${!base_models[@]}"; do
                 --max_num_examples_per_task 40 \
                 --use_vllm &
 
-            # ### truthfulness
-            # ./scripts/eval/truthfulqa.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
+            ### truthfulness
+            #### ./scripts/eval/truthfulqa.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
             
             eval_dataset_name='truthfulqa'
             local_save_dir=${cluster_root_path}/results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
@@ -230,8 +234,8 @@ for base_model in "${!base_models[@]}"; do
                 --load_in_8bit &
 
 
-            # # # ### multilinguality
-            # # # ./scripts/eval/tydiqa.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
+            # # ### multilinguality
+            # # ./scripts/eval/tydiqa.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
             
             eval_dataset_name='tydiqa'
             local_save_dir=${cluster_root_path}/results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type

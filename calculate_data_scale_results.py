@@ -21,27 +21,14 @@ def main(
 
     all_results = {}  
 
-    ### full results print ####
 
-    # baseline_tags = ['random', 'diversity', 'label', 'filtered']
-    # eval_dataset_lists = ['mmlu', 'bbh',  'tydiqa', 'gsm', 'truthfulqa', 'codex_humaneval']
-    # eval_metrics = ['average_acc', 'average_exact_match',  "average""f1", "exact_match", "truth-info acc", "pass@10" ]
-
-
-    # root_result_path = 'results'
-
-    # # Baseline tags and datasets
-    # train_dataset = 'all_train'
-
-    # # base_model ='meta-llama/Llama-2-7b-hf'
+    # base_model ='meta-llama/Llama-2-7b-hf'
     # base_model ="meta-llama/Meta-Llama-3.1-8B" 
-    # # base_model='mistralai/Mistral-7B-v0.3'
-    # #
-
-    # # labeling_model="meta-llama/Meta-Llama-3.1-8B-Instruct"
-    # # labeling_model="gpt-4o-mini"
+    # base_model='mistralai/Mistral-7B-v0.3'
+    
+    # labeling_model="meta-llama/Meta-Llama-3.1-8B-Instruct"
+    # labeling_model="gpt-4o-mini"
     # labeling_model='mistralai/Mistral-7B-Instruct-v0.3'
-
 
     # baseline_tags=['base','random',  'completion', 'perplexity',  'knn',  'label-filtered', 'diversity-filtered', 'less', 'filtered', 'full'] #baselines
     baseline_tags=[baseline_tag] #baselines
