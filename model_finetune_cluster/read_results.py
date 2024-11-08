@@ -70,9 +70,10 @@ def main(
                 elif eval_dataset == 'gsm':
                     value = round(all_results[tag][eval_dataset]['exact_match']* 100, 1)
                 elif eval_dataset == 'truthfulqa':
-                    value = round(all_results[tag][eval_dataset]["truth-info acc"]* 100, 1)
+                    # value = round(all_results[tag][eval_dataset]["truth-info acc"]* 100, 1)
+                    value = round(all_results[tag][eval_dataset]["MC2"]* 100, 1)
                 else:
-                    print("unknown eval dataset!")
+                    print("unknown eval dat·aset!")
 
 
             baseline_result.append(value)
@@ -83,8 +84,8 @@ def main(
 
     # Calculate the average accuracy for each baseline
     df_results['average acc'] = df_results.mean(axis=1).round(1)
-    print(f"### base_model: {base_model}")
-    print(f"### labeling_model: {labeling_model}")
+    # print(f"### base_model: {base_model}")
+    # print(f"### labeling_model: {labeling_model}")
 
 
     # Ensure full display of the DataFrame

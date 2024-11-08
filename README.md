@@ -4,6 +4,12 @@ However, like human annotations, these machine-generated labels (scores) may sti
 Applying these raw labels directly in the data selection process without considering the potential label noise may result in a sub-optimal case.
 In this project, we analyze the error patterns in LLM-generated scores and propose a novel data selection pipeline to enhance machine alignment. Our method incorporates label curation and noise reduction techniques over LLM scored data, meanwhile, considers the rareness of the data sample to improve both the accuracy and richness of the selected data. Empirical results demonstrate that our approach not only outperforms existing methods as well as full吃的 data training, but also reduces reliance on costly expert-driven models, achieving a more efficient and reliable alignment process.
 
+<br>
+<p align="center">
+<img src="data_selection_process.png" width="800">
+</p>
+<br>
+
 ## Dataset preparation
 
 We follow the code base from [TULU](https://github.com/allenai/open-instruct). You can download the evaluation and original training data by running
