@@ -2,13 +2,15 @@
 More recent methods have begun to directly leverage the most powerful LLM GPT-4 as data selectors, utilizing their ability to score and filter large-scale datasets with greater precision. 
 However, like human annotations, these machine-generated labels (scores) may still be inaccurate or contain LLM-level biases.
 Applying these raw labels directly in the data selection process without considering the potential label noise may result in a sub-optimal case.
-In this project, we analyze the error patterns in LLM-generated scores and propose a novel data selection pipeline to enhance machine alignment. Our method incorporates label curation and noise reduction techniques over LLM scored data, meanwhile, considers the rareness of the data sample to improve both the accuracy and richness of the selected data. Empirical results demonstrate that our approach not only outperforms existing methods as well as full吃的 data training, but also reduces reliance on costly expert-driven models, achieving a more efficient and reliable alignment process.
+In this project, we analyze the error patterns in LLM-generated scores and propose a novel data selection pipeline to enhance machine alignment. Our method incorporates label curation and noise reduction techniques over LLM scored data, meanwhile, considers the rareness of the data sample to improve both the accuracy and richness of the selected data. Empirical results demonstrate that our approach not only outperforms existing methods as well as full data training, but also reduces reliance on costly expert-driven models, achieving a more efficient and reliable alignment process.
 
-<br>
+<!-- <br>
 <p align="center">
-<img src="data_selection_process.png" width="00">
+<img src="pipeline_overview.png" width="00">
 </p>
-<br>
+<br> -->
+
+![The Overview of Data Selection Pipeline](pipeline_overview.png)
 
 ## Dataset preparation
 
@@ -82,7 +84,7 @@ We implement nine baselines consists of Random, Perplexity, KNN, [LESS](https://
 
 
 ## Step 4. Finetune & Evaluation
-Given the selected subsets in the path `model_finetune/new_train_data/`, you can use the code base from [TULU](https://github.com/allenai/open-instruct) to finetune base models (Mistral or LLaMA) and then do evaluation.
+Given the selected subsets in the path `model_finetune/selected_data/`, you can use the code base from [TULU](https://github.com/allenai/open-instruct) to finetune base models (Mistral or LLaMA) and then do evaluation.
 In particular, you can submit the jobs via launcher under the path `model_finetune/`. For example, you can submit the job by running the code 
 ```
 cd model_finetune/ && launcher run job_pipeline_all.yaml

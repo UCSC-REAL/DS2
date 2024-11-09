@@ -11,8 +11,8 @@ class TULU_RLHF(CustomizedDataset):
 
         ## dataset 
         self.jsonfilename = cfg.data_root + f'data/train_data/{args.dataset_name}_data.jsonl'
-        # label_path  =  cfg.data_root + f'model_finetune/new_train_data/{args.labeling_model}/{args.dataset_name}/output_labels_revised.pt'
-        # label_path  =  cfg.data_root + f'new_train_data/{args.labeling_model}/{args.dataset_name}/clean_output_labels.pt' for clean evaluation
+        # label_path  =  cfg.data_root + f'model_finetune/selected_data/{args.labeling_model}/{args.dataset_name}/output_labels_revised.pt'
+        # label_path  =  cfg.data_root + f'selected_data/{args.labeling_model}/{args.dataset_name}/clean_output_labels.pt' for clean evaluation
 
         label_path = cfg.label_path
 
