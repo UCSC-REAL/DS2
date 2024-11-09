@@ -42,11 +42,11 @@ cfg.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 ## raw labels 
-cfg.label_path = cfg.data_root + f'model_finetune_cluster/new_train_data/{args.labeling_model}/{args.dataset_name}/output_labels_revised.pt'
+cfg.label_path = cfg.data_root + f'model_finetune/new_train_data/{args.labeling_model}/{args.dataset_name}/output_labels_revised.pt'
 
 
 ## cured labels
-# cfg.label_path  =  cfg.data_root + f'model_finetune_cluster/new_train_data/{args.labeling_model}/{args.dataset_name}/output_labels_revised_cured.pt'
+# cfg.label_path  =  cfg.data_root + f'model_finetune/new_train_data/{args.labeling_model}/{args.dataset_name}/output_labels_revised_cured.pt'
 
 
 dataset = TULU_RLHF(cfg, args, train=True)

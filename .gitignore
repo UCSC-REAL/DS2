@@ -146,7 +146,7 @@ dmypy.json
 
 #models & datas
 data/
-model_finetune_cluster/new_train_data/*
+model_finetune/new_train_data/*
 data_scale_models/
 finetune_70B_result/*
 finetune_lima_result/*
@@ -157,7 +157,7 @@ output/*
 raw_data/*
 results_backup/*
 logs-llama3.1-8b/
-model_finetune_cluster/raw_data/*
+model_finetune/raw_data/*
 labeling/
 
 *.yaml

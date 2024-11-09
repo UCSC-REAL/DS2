@@ -6,22 +6,22 @@ In this project, we analyze the error patterns in LLM-generated scores and propo
 
 <br>
 <p align="center">
-<img src="data_selection_process.png" width="800">
+<img src="data_selection_process.png" width="00">
 </p>
 <br>
 
 ## Dataset preparation
 
-We follow the code base from [TULU](https://github.com/allenai/open-instruct). You can download the evaluation and original training data by running
+We follow the codebase from [TULU](https://github.com/allenai/open-instruct). You can download the evaluation and original training data by running
 
 ```
-bash model_finetune_cluster/scripts/prepare_eval_data.sh
+bash model_finetune/scripts/prepare_eval_data.sh
 ```
 
 and 
 
 ```
-bash model_finetune_cluster/scripts/prepare_train_data.sh
+bash model_finetune/scripts/prepare_train_data.sh
 ```
 Our selected evaluation and training data are listed below.
 
@@ -82,21 +82,21 @@ We implement nine baselines consists of Random, Perplexity, KNN, [LESS](https://
 
 
 ## Step 4. Finetune & Evaluation
-Given the selected subsets in the path `model_finetune_cluster/new_train_data/`, you can use the code base from [TULU](https://github.com/allenai/open-instruct) to finetune base models (Mistral or LLaMA) and then do evaluation.
-In particular, you can submit the jobs via launcher under the path `model_finetune_cluster/`. For example, you can submit the job by running the code 
+Given the selected subsets in the path `model_finetune/new_train_data/`, you can use the code base from [TULU](https://github.com/allenai/open-instruct) to finetune base models (Mistral or LLaMA) and then do evaluation.
+In particular, you can submit the jobs via launcher under the path `model_finetune/`. For example, you can submit the job by running the code 
 ```
-cd model_finetune_cluster/ && launcher run job_pipeline_all.yaml
+cd model_finetune/ && launcher run job_pipeline_all.yaml
 ```
 Models and evaluation results are stored in the [Azure StorageAccount](https://portal.azure.com/#view/Microsoft_Azure_Storage/ContainerMenuBlade/~/overview/storageAccountId/%2Fsubscriptions%2F6184c5ce-cd29-4d42-bbcc-0fb06a3f97f1%2FresourceGroups%2FACCLLM%2Fproviders%2FMicrosoft.Storage%2FstorageAccounts%2Fafminternshipuksouth/path/jinlong/etag/%220x8DCAC3F12DEAFFE%22/defaultEncryptionScope/%24account-encryption-key/denyEncryptionScopeOverride~/false/defaultId//publicAccessVal/None). 
 
 Futhermore, we can also execute the code locally, e.g.,  
 ```
-cd model_finetune_cluster/ && bash run_pipeline_all.sh
+cd model_finetune/ && bash run_pipeline_all.sh
 ```
 
 You can present the final result by running 
 ```
-python model_finetune_cluster/read_results.py
+python model_finetune/read_results.py
 ```
 
 
