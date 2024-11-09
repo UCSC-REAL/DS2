@@ -86,7 +86,7 @@ mkdir -p $cluster_root_path
 #             # train_data="score_curation/data/${labeling_model}/${dataset_name}/${data_type}_dataset.json"
 #             echo "Processing data type: $data_type"
 
-#             train_data="new_train_data/${labeling_model}/${train_dataset_name}/${data_type}_dataset.json"
+#             train_data="selected_data/${labeling_model}/${train_dataset_name}/${data_type}_dataset.json"
 
 #             echo "train data path: $train_data"
 

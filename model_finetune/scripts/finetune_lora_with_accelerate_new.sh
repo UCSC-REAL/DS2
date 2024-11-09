@@ -25,7 +25,7 @@ mkdir -p output/models/
 # train_data="score_curation/data/${labeling_model}/${dataset_name}/${data_type}_dataset.json"
 echo "Processing data type: $data_type"
 
-train_data="new_train_data/${labeling_model}/${train_dataset_name}/${data_type}_dataset.json"
+train_data="selected_data/${labeling_model}/${train_dataset_name}/${data_type}_dataset.json"
 
 GRADIENT_ACC_STEPS=$(($TOTAL_BATCH_SIZE/$NUM_GPUS/$BATCH_SIZE_PER_GPU))
 echo "Training ${base_model} using $NUM_GPUS GPUs, $BATCH_SIZE_PER_GPU batch size per GPU, $GRADIENT_ACC_STEPS gradient accumulation steps"
