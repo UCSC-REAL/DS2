@@ -85,6 +85,7 @@ def main(args):
                 device_map="balanced_low_0" if torch.cuda.device_count() > 1 else "auto",
                 gptq_model=args.gptq,
             )
+            
             # modify tokenizer if required
             from transformers import GPTNeoXForCausalLM, OPTForCausalLM
             if isinstance(model, GPTNeoXForCausalLM) or isinstance(model, OPTForCausalLM):

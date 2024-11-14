@@ -6,13 +6,13 @@ export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 NUM_GPUS=8
 # TRAIN_DATASET_LIST=('flan_v2' 'oasst1' 'wizardlm' 'dolly' 'stanford_alpaca' 'all_train') # full data list
 
-TRAIN_DATASET_LIST=('all_train') 
+TRAIN_DATASET_LIST=('stanford_alpaca') 
 
 #########################################
 ############ labeling_models #############
 
-labeling_model="meta-llama/Meta-Llama-3.1-8B-Instruct"
-# labeling_model="gpt-4o-mini"
+# labeling_model="meta-llama/Meta-Llama-3.1-8B-Instruct"
+labeling_model="gpt-4o-mini"
 # labeling_model='mistralai/Mistral-7B-Instruct-v0.3'
 
 ############ labeling_models #############
@@ -23,35 +23,16 @@ labeling_model="meta-llama/Meta-Llama-3.1-8B-Instruct"
 ############ base_models #############
 
 declare -A base_models
-# base_models["meta-llama/Llama-2-7b-hf"]="128 4 4096"  
-base_models["meta-llama/Meta-Llama-3.1-8B"]="8 1 128" # TOTAL_BATCH_SIZE BATCH_SIZE_PER_GPU max_seq_length
+# base_models["StudentLLM/Alpagasus-2-7B-QLoRA"]="128 4 4096"  
+base_models["meta-llama/Llama-2-7b-hf"]="128 2 2048"
+
+# base_models["meta-llama/Meta-Llama-3.1-8B"]="8 1 128" # TOTAL_BATCH_SIZE BATCH_SIZE_PER_GPU max_seq_length
 # base_models["mistralai/Mistral-7B-v0.3"]="128 4 2048"
-
-
 # base_models["meta-llama/Llama-2-13b-hf"]="128 1 2048"
 # base_models["meta-llama/Meta-Llama-3.1-70B"]="8 1 1024"
 
+data_types=('filtered-cured-0.3')
 
-############ base_models #############
-######################################
-
-
-## # data_types used for ablation study, which determines the finetuned model
-
-# data_types=( 'completion' 'perplexity' 'knn' 'less' 'full' 'random' 'label-filtered' 'diversity-filtered' 'filtered' ) #baselines
-
-
-# data_types=('less')
-# data_types=('less' 'less-bbh' 'less-gsm' 'less-mmlu' 'less-truthfulqa' 'less-tydiqa')
-# data_types=('less-bbh-half' 'less-gsm-half' 'less-mmlu-half' 'less-truthfulqa-half' 'less-tydiqa-half')
-# data_types=('less-truthfulqa-dpo')
-# data_types=('less-truthfulqa-dpo-pair')
-# data_types=('less-truthfulqa-dpo-pair-half')
-
-# data_types=('less-bbh-qa-pair') #'less-mmlu-qa-pair' 'less-truthfulqa-qa-pair'
-
-# data_types=('random' 'diversity-filtered' 'label-filtered') #'filtered-cured-0.4'
-data_types=('random')
 #############################################################
 ######## model finetuning on selected training data ######### 
 #############################################################
@@ -63,7 +44,7 @@ echo "###### All training datasets here:: ${TRAIN_DATASET_LIST[@]}"
 
 # cluster_root_path="output" ## . for local
 
-cluster_root_path="/mnt/server0-A/jinlong/less-output" ##  
+cluster_root_path="/mnt/server0-A/jinlong/alpagasus-output" ##  
 
 mkdir -p $cluster_root_path
 
@@ -110,14 +91,18 @@ do
                         # --num_machines 1 \
         # --num_processes $NUM_GPUS \
             # --deepspeed_config_file ds_configs/stage3_no_offloading_accelerate.conf \
+                # --config_file fsdp_configs/fsdp_config.yaml \
+
             # --main_process_port 29501 \
-                # --use_fsdp \
-                # --fsdp_sharding_strategy FULL_SHARD \
-                # --fsdp_offload_params true \
-                # --fsdp_activation_checkpointing true \
+
             accelerate launch \
+                --num_machines 1 \
+                --num_processes $NUM_GPUS \
                 --mixed_precision bf16 \
-                --config_file fsdp_configs/fsdp_config.yaml \
+                --use_fsdp \
+                --fsdp_sharding_strategy FULL_SHARD \
+                --fsdp_offload_params true \
+                --fsdp_activation_checkpointing true \
                 --main_process_port 29501 \
                 open_instruct/finetune.py \
                 --model_name_or_path $base_model \
@@ -142,14 +127,14 @@ do
                 --output_dir $cluster_root_path/models/${labeling_model}/${train_dataset_name}/${base_model}/lora_${data_type}/ \
                 --with_tracking \
                 --report_to tensorboard \
-                --logging_steps 1
+                --logging_steps 1 
                 # --use_qlora 
 
             python open_instruct/merge_lora.py \
                 --base_model_name_or_path $base_model \
                 --lora_model_name_or_path $cluster_root_path/models/${labeling_model}/${train_dataset_name}/${base_model}/lora_${data_type}/ \
                 --output_dir $cluster_root_path/models/${labeling_model}/${train_dataset_name}/${base_model}/lora_merged_${data_type}/ \
-                --save_tokenizer
+                --save_tokenizer 
                 # --qlora
 
             sleep 10s
@@ -164,9 +149,9 @@ done
 # wait
 # sleep 10s
 
-# # ############################################################
-# # ######## ####  finetuned model  evaluation ######## #### 
-# # ###########################################################
+# # # ############################################################
+# # # ######## ####  finetuned model  evaluation ######## #### 
+# # # ###########################################################
 
 # for base_model in "${!base_models[@]}"; do
 
@@ -197,37 +182,39 @@ done
 #             --tokenizer_name_or_path  $model_name_or_path \
 #             --eval_batch_size 8  &
 
-#             # ### reasoning
-#             #### ./scripts/eval/gsm.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
+#             ### reasoning
+#             ### ./scripts/eval/gsm.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
             
 #             eval_dataset_name='gsm'
 #             local_save_dir=${cluster_root_path}/results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
 
-#             CUDA_VISIBLE_DEVICES=2,5 python -m eval.gsm.run_eval \
+#             CUDA_VISIBLE_DEVICES=2 python -m eval.gsm.run_eval \
 #                 --data_dir raw_data/eval/gsm/ \
 #                 --max_num_examples 200 \
 #                 --save_dir ${local_save_dir} \
 #                 --model_name_or_path $model_name_or_path \
 #                 --tokenizer_name_or_path $model_name_or_path \
 #                 --n_shot 8 \
-#                 --use_vllm &
+#                 --eval_batch_size 16 
+#                 # --use_vllm &
 
-#             ### BBH: 
-#             #### ./scripts/eval/bbh.sh "$train_dataset_name" "$labeling_model" "$base_model"  "${!models[@]}" "${!save_dirs[@]}" "$cuda_devices"
+#             ## BBH: 
+#             ### ./scripts/eval/bbh.sh "$train_dataset_name" "$labeling_model" "$base_model"  "${!models[@]}" "${!save_dirs[@]}" "$cuda_devices"
         
 #             eval_dataset_name='bbh'
 #             local_save_dir=${cluster_root_path}/results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
 
-#             CUDA_VISIBLE_DEVICES=1 python -m eval.bbh.run_eval \
+#             CUDA_VISIBLE_DEVICES=3 python -m eval.bbh.run_eval \
 #                 --data_dir raw_data/eval/bbh \
 #                 --save_dir ${local_save_dir} \
 #                 --model_name_or_path $model_name_or_path  \
 #                 --tokenizer_name_or_path $model_name_or_path \
 #                 --max_num_examples_per_task 40 \
+#                 --eval_batch_size 16 
 #                 --use_vllm &
 
-#             ### truthfulness
-#             #### ./scripts/eval/truthfulqa.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
+#             ## truthfulness
+#             ### ./scripts/eval/truthfulqa.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
             
 #             eval_dataset_name='truthfulqa'
 #             local_save_dir=${cluster_root_path}/results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
@@ -245,8 +232,8 @@ done
 #                 --load_in_8bit &
 
 
-#             # # ### multilinguality
-#             # # ./scripts/eval/tydiqa.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
+#             # ### multilinguality
+#             # ./scripts/eval/tydiqa.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
             
 #             eval_dataset_name='tydiqa'
 #             local_save_dir=${cluster_root_path}/results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type

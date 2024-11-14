@@ -181,8 +181,8 @@ for base_model in "${!base_models[@]}"; do
             --save_dir ${local_save_dir} \
             --model_name_or_path $model_name_or_path \
             --tokenizer_name_or_path  $model_name_or_path \
-            --eval_batch_size 4  
-            --use_chat_format 
+            --eval_batch_size 4  \
+            --use_chat_format \
             --chat_formatting_function eval.templates.create_prompt_with_tulu_chat_format &
 
             # ### reasoning
