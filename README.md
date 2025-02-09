@@ -1,14 +1,27 @@
-# LLM Data Selection Pipeline
-More recent methods have begun to directly leverage the most powerful LLM GPT-4 as data selectors, utilizing their ability to score and filter large-scale datasets with greater precision. 
+# Improving Data Efficiency via Curating LLM-Driven Rating Systems
+
+
+<a href='https://github.com/JlPang863/LLM_data_selection'><img src='https://img.shields.io/badge/Project-Page-Green'></a>
+<a href='https://arxiv.org/abs/2410.10877'><img src='https://img.shields.io/badge/Paper-PDF-orange'></a> 
+
+[Jinlong Pang](https://jlpang863.github.io/), [Jiaheng Wei](https://sites.google.com/ucsc.edu/jiahengwei), [Ankit Parag Shah](https://ankitshah009.github.io/), [Zhaowei Zhu](https://users.soe.ucsc.edu/~zhaoweizhu/),  [Yaxuan Wang](https://supergirl-os.github.io/), [Chen Qian](https://users.soe.ucsc.edu/~qian/), [Yang Liu](http://www.yliuu.com/), [Yujia Bao](https://www.yujia.io/) [Wei Wei](http://www.weiwei.one/).
+
+University of California, Santa Cruz
+
+<!-- More recent methods have begun to directly leverage the most powerful LLM GPT-4 as data selectors, utilizing their ability to score and filter large-scale datasets with greater precision. 
 However, like human annotations, these machine-generated labels (scores) may still be inaccurate or contain LLM-level biases.
 Applying these raw labels directly in the data selection process without considering the potential label noise may result in a sub-optimal case.
-In this project, we analyze the error patterns in LLM-generated scores and propose a novel data selection pipeline to enhance machine alignment. Our method incorporates label curation and noise reduction techniques over LLM scored data, meanwhile, considers the rareness of the data sample to improve both the accuracy and richness of the selected data. Empirical results demonstrate that our approach not only outperforms existing methods as well as full data training, but also reduces reliance on costly expert-driven models, achieving a more efficient and reliable alignment process.
+In this project, we analyze the error patterns in LLM-generated scores and propose a novel data selection pipeline to enhance machine alignment. Our method incorporates label curation and noise reduction techniques over LLM scored data, meanwhile, considers the rareness of the data sample to improve both the accuracy and richness of the selected data. Empirical results demonstrate that our approach not only outperforms existing methods as well as full data training, but also reduces reliance on costly expert-driven models, achieving a more efficient and reliable alignment process. -->
 
 <!-- <br>
 <p align="center">
 <img src="pipeline_overview.png" width="00">
 </p>
 <br> -->
+
+## 🎉🎉 News 
+- [x] [2025.02.01] 🚀🚀 Release the code of DS2.
+
 
 ![The Overview of Data Selection Pipeline](pipeline_overview.png)
 
@@ -40,14 +53,16 @@ Our selected evaluation and training data are listed below.
 | BBH                              | Dolly                              |
 | TydiQA                           | Stanford Alpaca                    | -->
 
-## Setup
+## Environment setup
 To run training, evaluation, or inference for finetuned models, you need to install the required packages by running the following command (after installing pytorch):
 ```
 pip install -r requirements.txt
 ```
 
 
+## 🚀🚀 Get Started
 
+----- 
 
 ## Step 1. LLM-prompt-based rating
 
@@ -66,7 +81,7 @@ cd LLM_scoring && bash scoring_datasets_local.sh
 
 
 
-## Step 2. Score curation method
+## Step 2. Score curation
 Th label curation code base is from [Docta](https://github.com/Docta-ai/docta) in the `./score_curation` path. You can execute the score curation by running
 ```
 cd score_curation && bash diagnose_tulu.sh
@@ -75,7 +90,7 @@ The corresponding curation report files could be found in the path `./score_cura
 
 
 
-## Step 3. Data selection strategy
+## Step 3. Data selection
 Given the existing score curation reports, you can directly use the following jupyter notebooks to do data selection including all baselines: `data_gen_baselines_all.ipynb`. The generated subsets can be further used for LLM instruction tuning. Other selected datasets used for ablation study can be also generated from the following jupyter notebooks located in the `./score_curation` path: `data_gen_score_curation.ipynb` and `data_gen_data_scale.ipynb`. In particular, we use `data_gen_score_curation.ipynb` to generate subsets after curating machine-generated raw scores.
 
 
@@ -89,7 +104,7 @@ In particular, you can submit the jobs via launcher under the path `model_finetu
 ```
 cd model_finetune/ && launcher run job_pipeline_all.yaml
 ```
-Models and evaluation results are stored in the [Azure StorageAccount](https://portal.azure.com/#view/Microsoft_Azure_Storage/ContainerMenuBlade/~/overview/storageAccountId/%2Fsubscriptions%2F6184c5ce-cd29-4d42-bbcc-0fb06a3f97f1%2FresourceGroups%2FACCLLM%2Fproviders%2FMicrosoft.Storage%2FstorageAccounts%2Fafminternshipuksouth/path/jinlong/etag/%220x8DCAC3F12DEAFFE%22/defaultEncryptionScope/%24account-encryption-key/denyEncryptionScopeOverride~/false/defaultId//publicAccessVal/None). 
+<!-- Models and evaluation results are stored in the [Azure StorageAccount](https://portal.azure.com/#view/Microsoft_Azure_Storage/ContainerMenuBlade/~/overview/storageAccountId/%2Fsubscriptions%2F6184c5ce-cd29-4d42-bbcc-0fb06a3f97f1%2FresourceGroups%2FACCLLM%2Fproviders%2FMicrosoft.Storage%2FstorageAccounts%2Fafminternshipuksouth/path/jinlong/etag/%220x8DCAC3F12DEAFFE%22/defaultEncryptionScope/%24account-encryption-key/denyEncryptionScopeOverride~/false/defaultId//publicAccessVal/None).  -->
 
 Futhermore, we can also execute the code locally, e.g.,  
 ```
