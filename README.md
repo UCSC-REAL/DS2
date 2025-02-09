@@ -22,7 +22,6 @@ In this project, we analyze the error patterns in LLM-generated scores and propo
 
 ## Brief Introduction
 This project is motivated by a common phenomenon that the errors of LLM-generated raw rating scores are widespread and vary significantly across different LLMs. Motivated by this, we introduce DS2, a diversity-aware score curation method for data selection.
-method for Data Selection.
 
 ![The Overview of Data Selection Pipeline](pipeline_overview.png)
 
