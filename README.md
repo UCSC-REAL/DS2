@@ -4,7 +4,7 @@
 <a href='https://github.com/JlPang863/LLM_data_selection'><img src='https://img.shields.io/badge/Project-Page-Green'></a>
 <a href='https://arxiv.org/abs/2410.10877'><img src='https://img.shields.io/badge/Paper-PDF-orange'></a> 
 
-[Jinlong Pang](https://jlpang863.github.io/), [Jiaheng Wei](https://sites.google.com/ucsc.edu/jiahengwei), [Ankit Parag Shah](https://ankitshah009.github.io/), [Zhaowei Zhu](https://users.soe.ucsc.edu/~zhaoweizhu/),  [Yaxuan Wang](https://supergirl-os.github.io/), [Chen Qian](https://users.soe.ucsc.edu/~qian/), [Yang Liu](http://www.yliuu.com/), [Yujia Bao](https://www.yujia.io/) [Wei Wei](http://www.weiwei.one/).
+[Jinlong Pang](https://jlpang863.github.io/), [Jiaheng Wei](https://sites.google.com/ucsc.edu/jiahengwei), [Ankit Parag Shah](https://ankitshah009.github.io/), [Zhaowei Zhu](https://users.soe.ucsc.edu/~zhaoweizhu/),  [Yaxuan Wang](https://supergirl-os.github.io/), [Chen Qian](https://users.soe.ucsc.edu/~qian/), [Yang Liu](http://www.yliuu.com/), [Yujia Bao](https://www.yujia.io/) and [Wei Wei](http://www.weiwei.one/), ICLR 2025.
 
 University of California, Santa Cruz
 
@@ -20,7 +20,8 @@ In this project, we analyze the error patterns in LLM-generated scores and propo
 <br> -->
 
 ## 🎉🎉 News 
-- [x] [2025.02.01] 🚀🚀 Release the code of DS2.
+- [x] [2025.02.01] 👏👏 Accepted by **ICLR 2025**.
+- [x] [2024.12.01] 🚀🚀 Release the code of DS2.
 
 
 ![The Overview of Data Selection Pipeline](pipeline_overview.png)
