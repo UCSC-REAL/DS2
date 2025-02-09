@@ -8,10 +8,6 @@
 
 **[UCSC-REAL Lab](https://github.com/UCSC-REAL), University of California, Santa Cruz**
 
-<!-- More recent methods have begun to directly leverage the most powerful LLM GPT-4 as data selectors, utilizing their ability to score and filter large-scale datasets with greater precision. 
-However, like human annotations, these machine-generated labels (scores) may still be inaccurate or contain LLM-level biases.
-Applying these raw labels directly in the data selection process without considering the potential label noise may result in a sub-optimal case.
-In this project, we analyze the error patterns in LLM-generated scores and propose a novel data selection pipeline to enhance machine alignment. Our method incorporates label curation and noise reduction techniques over LLM scored data, meanwhile, considers the rareness of the data sample to improve both the accuracy and richness of the selected data. Empirical results demonstrate that our approach not only outperforms existing methods as well as full data training, but also reduces reliance on costly expert-driven models, achieving a more efficient and reliable alignment process. -->
 
 ------ 
 
@@ -43,13 +39,6 @@ bash model_finetune/scripts/prepare_eval_data.sh
 # train data 
 bash model_finetune/scripts/prepare_train_data.sh
 ```
-
-<!-- Our selected evaluation and training data are listed below. -->
-<!-- | **Category**         | **Dataset**                                  |
-|----------------------|----------------------------------------------|
-| **Evaluation Data**   | MMLU, TruthfulQA, GSM, BBH, TydiQA           |
-| **Training Data**     | Flan v2, OASST1, WizardLM, Dolly, Stanford Alpaca |
- -->
 
 
 ## Environment Setup
@@ -104,7 +93,7 @@ In particular, you can submit the jobs via launcher under the path `model_finetu
 ```
 cd model_finetune/ && launcher run job_pipeline_all.yaml
 ```
-<!-- Models and evaluation results are stored in the [Azure StorageAccount](https://portal.azure.com/#view/Microsoft_Azure_Storage/ContainerMenuBlade/~/overview/storageAccountId/%2Fsubscriptions%2F6184c5ce-cd29-4d42-bbcc-0fb06a3f97f1%2FresourceGroups%2FACCLLM%2Fproviders%2FMicrosoft.Storage%2FstorageAccounts%2Fafminternshipuksouth/path/jinlong/etag/%220x8DCAC3F12DEAFFE%22/defaultEncryptionScope/%24account-encryption-key/denyEncryptionScopeOverride~/false/defaultId//publicAccessVal/None).  -->
+
 
 Futhermore, we can also execute the code locally, e.g.,  
 ```
