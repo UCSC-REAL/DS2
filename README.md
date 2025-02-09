@@ -39,13 +39,11 @@ method for Data Selection.
 
 This repository follows the codebase from [TULU](https://github.com/allenai/open-instruct). One can download the evaluation and original training data by running
 
-```
+```bash
+# eval data
 bash model_finetune/scripts/prepare_eval_data.sh
-```
 
-and 
-
-```
+# train data 
 bash model_finetune/scripts/prepare_train_data.sh
 ```
 Our selected evaluation and training data are listed below.
