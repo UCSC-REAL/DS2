@@ -37,7 +37,7 @@ method for Data Selection.
 
 ## Dataset preparation
 
-This repository follows the codebase from [TULU](https://github.com/allenai/open-instruct). One can download the evaluation and original training data by running
+This repository follows the codebase from [TULU](https://github.com/allenai/open-instruct). One can download the evaluation/training data by
 
 ```bash
 # eval data
