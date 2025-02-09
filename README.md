@@ -62,9 +62,9 @@ pip install -r requirements.txt
 ```
 
 
+----- 
 ## 🚀🚀 Get Started
 
------ 
 
 ### 🔨 Step 1. LLM-prompt-based rating
 
