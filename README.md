@@ -4,7 +4,7 @@
 <a href='https://github.com/JlPang863/LLM_data_selection'><img src='https://img.shields.io/badge/Project-Page-Green'></a>
 <a href='https://arxiv.org/abs/2410.10877'><img src='https://img.shields.io/badge/Paper-PDF-orange'></a> 
 
-[Jinlong Pang](https://jlpang863.github.io/), [Jiaheng Wei](https://sites.google.com/ucsc.edu/jiahengwei), [Ankit Parag Shah](https://ankitshah009.github.io/), [Zhaowei Zhu](https://users.soe.ucsc.edu/~zhaoweizhu/),  [Yaxuan Wang](https://supergirl-os.github.io/), [Chen Qian](https://users.soe.ucsc.edu/~qian/), [Yang Liu](http://www.yliuu.com/), [Yujia Bao](https://www.yujia.io/) and [Wei Wei](http://www.weiwei.one/), ICLR 2025.
+[Jinlong Pang](https://jlpang863.github.io/), [Jiaheng Wei](https://sites.google.com/ucsc.edu/jiahengwei), [Ankit Parag Shah](https://ankitshah009.github.io/), [Zhaowei Zhu](https://users.soe.ucsc.edu/~zhaoweizhu/),  [Yaxuan Wang](https://supergirl-os.github.io/), [Chen Qian](https://users.soe.ucsc.edu/~qian/), [Yang Liu](http://www.yliuu.com/), [Yujia Bao](https://www.yujia.io/) and [Wei Wei](http://www.weiwei.one/), accepted by ICLR 2025.
 
 University of California, Santa Cruz
 
@@ -13,14 +13,10 @@ However, like human annotations, these machine-generated labels (scores) may sti
 Applying these raw labels directly in the data selection process without considering the potential label noise may result in a sub-optimal case.
 In this project, we analyze the error patterns in LLM-generated scores and propose a novel data selection pipeline to enhance machine alignment. Our method incorporates label curation and noise reduction techniques over LLM scored data, meanwhile, considers the rareness of the data sample to improve both the accuracy and richness of the selected data. Empirical results demonstrate that our approach not only outperforms existing methods as well as full data training, but also reduces reliance on costly expert-driven models, achieving a more efficient and reliable alignment process. -->
 
-<!-- <br>
-<p align="center">
-<img src="pipeline_overview.png" width="00">
-</p>
-<br> -->
 
 ## 🎉🎉 News 
 - [x] [2025.02.01] 👏👏 Accepted by **ICLR 2025**.
+- [x] [2024.12.10] 📢📢 Release the [curated dataset](https://huggingface.co/datasets/jlpang888/cured_dataset_gpt_4o_mini).
 - [x] [2024.12.01] 🚀🚀 Release the code of DS2.
 
 
