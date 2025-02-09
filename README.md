@@ -57,7 +57,7 @@ bash model_finetune/scripts/prepare_train_data.sh
 
 ## Environment Setup
 To run training, evaluation, or inference for finetuned models, you need to install the required packages by running the following command (after installing pytorch):
-```
+```bash
 pip install -r requirements.txt
 ```
 
