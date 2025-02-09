@@ -46,8 +46,8 @@ bash model_finetune/scripts/prepare_eval_data.sh
 # train data 
 bash model_finetune/scripts/prepare_train_data.sh
 ```
-Our selected evaluation and training data are listed below.
 
+<!-- Our selected evaluation and training data are listed below. -->
 <!-- | **Category**         | **Dataset**                                  |
 |----------------------|----------------------------------------------|
 | **Evaluation Data**   | MMLU, TruthfulQA, GSM, BBH, TydiQA           |
