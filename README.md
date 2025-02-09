@@ -65,7 +65,6 @@ pip install -r requirements.txt
 ----- 
 ## 🚀🚀 Get Started
 
----
 ### 🧩 Step 1. LLM-prompt-based rating
 
 In this project, we use three labeling models to generate rating scores, including GPT-4o-mini, Mistral-7B-Instruct-v0.3, LLaMA-3.1-8B-Instruct.  In particular, we can use the GPT API call to generate the model answers by executing the code located in the `LLM_scoring` path: 
