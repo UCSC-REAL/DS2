@@ -119,6 +119,7 @@ One can present the final result by running
 python model_finetune/read_results.py
 ```
 
+------
 
 ## Final results 
 The final results of LLM judging compared with human-annotated dataset LIMA can be found in `lima_compare_plot.ipynb`. Moreover, for the tabular results, you can check the `reading_results.ipynb` jupyter notebook.
