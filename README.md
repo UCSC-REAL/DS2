@@ -48,20 +48,14 @@ bash model_finetune/scripts/prepare_train_data.sh
 ```
 Our selected evaluation and training data are listed below.
 
-| **Category**         | **Dataset**                                  |
+<!-- | **Category**         | **Dataset**                                  |
 |----------------------|----------------------------------------------|
 | **Evaluation Data**   | MMLU, TruthfulQA, GSM, BBH, TydiQA           |
 | **Training Data**     | Flan v2, OASST1, WizardLM, Dolly, Stanford Alpaca |
+ -->
 
-<!-- | **Evaluation Data**              | **Original Training Data**         |
-|:--------------------------------:|:----------------------------------:|
-| MMLU                             | Flan v2                            |
-| TruthfulQA                       | OASST1                             |
-| GSM                              | WizardLM                           |
-| BBH                              | Dolly                              |
-| TydiQA                           | Stanford Alpaca                    | -->
 
-## Environment setup
+## Environment Setup
 To run training, evaluation, or inference for finetuned models, you need to install the required packages by running the following command (after installing pytorch):
 ```
 pip install -r requirements.txt
@@ -128,6 +122,7 @@ python model_finetune/read_results.py
 ## Final results 
 The final results of LLM judging compared with human-annotated dataset LIMA can be found in `lima_compare_plot.ipynb`. Moreover, for the tabular results, you can check the `reading_results.ipynb` jupyter notebook.
 
+------
 
 ## Citation
 If you used this repository, please cite our work:
