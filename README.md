@@ -65,7 +65,7 @@ pip install -r requirements.txt
 ----- 
 ## 🚀🚀 Get Started
 
-
+---
 ### 🧩 Step 1. LLM-prompt-based rating
 
 In this project, we use three labeling models to generate rating scores, including GPT-4o-mini, Mistral-7B-Instruct-v0.3, LLaMA-3.1-8B-Instruct.  In particular, we can use the GPT API call to generate the model answers by executing the code located in the `LLM_scoring` path: 
@@ -82,6 +82,7 @@ cd LLM_scoring && bash scoring_datasets_local.sh
 ```
 
 
+---
 
 ### 🧩 Step 2. Score curation
 Th label curation code base is from [Docta](https://github.com/Docta-ai/docta) in the `./score_curation` path. You can execute the score curation by running
@@ -91,6 +92,7 @@ cd score_curation && bash diagnose_tulu.sh
 The corresponding curation report files could be found in the path `./score_curation/results`.
 
 
+---
 
 ### 🧩 Step 3. Data selection
 Given the existing score curation reports, you can directly use the following jupyter notebooks to do data selection including all baselines: `data_gen_baselines_all.ipynb`. The generated subsets can be further used for LLM instruction tuning. Other selected datasets used for ablation study can be also generated from the following jupyter notebooks located in the `./score_curation` path: `data_gen_score_curation.ipynb` and `data_gen_data_scale.ipynb`. In particular, we use `data_gen_score_curation.ipynb` to generate subsets after curating machine-generated raw scores.
@@ -99,7 +101,7 @@ Given the existing score curation reports, you can directly use the following ju
 We implement nine baselines consists of Random, Perplexity, KNN, [LESS](https://github.com/princeton-nlp/LESS), Completion_length, Full data, [Alpagasus](https://github.com/Lichang-Chen/AlpaGasus/tree/main) (label-filtered), [DEITA](https://github.com/hkust-nlp/deita) (diversity-filtered), Ours w/o. curation and Ours.
 
 
-
+---
 ### 🧩 Step 4. Finetune & Evaluation
 Given the selected subsets in the path `model_finetune/selected_data/`, you can use the code base from [TULU](https://github.com/allenai/open-instruct) to finetune base models (Mistral or LLaMA) and then do evaluation.
 In particular, you can submit the jobs via launcher under the path `model_finetune/`. For example, you can submit the job by running the code 
