@@ -113,7 +113,7 @@ Futhermore, we can also execute the code locally, e.g.,
 cd model_finetune/ && bash run_pipeline_all.sh
 ```
 
-You can present the final result by running 
+One can present the final result by running 
 ```
 python model_finetune/read_results.py
 ```
