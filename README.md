@@ -17,8 +17,8 @@ In this project, we analyze the error patterns in LLM-generated scores and propo
 
 ## 🎉🎉 News 
 - [x] [2025.02.01] 👏👏 Accepted by **ICLR 2025**.
-- [x] [2024.12.10] 📢📢 Release the [curated dataset](https://huggingface.co/datasets/jlpang888/cured_dataset_gpt_4o_mini).
-- [x] [2024.12.01] 🚀🚀 Release the code of **DS2**.
+- [x] [2024.11.10] 📢📢 Release the [curated dataset](https://huggingface.co/datasets/jlpang888/cured_dataset_gpt_4o_mini).
+- [x] [2024.10.08] 🚀🚀 Release the code of **DS2**.
 
 ## Brief Introduction
 This project is motivated by a common phenomenon that the errors of LLM-generated raw rating scores are widespread and vary significantly across different LLMs. Motivated by this, we introduce DS2, a diversity-aware score curation method for data selection.
