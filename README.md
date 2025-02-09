@@ -30,7 +30,8 @@ This project is motivated by a common phenomenon that the errors of LLM-generate
 
 ## Dataset preparation
 
-This repository follows the codebase from [TULU](https://github.com/allenai/open-instruct). One can download the evaluation/training data by
+<!-- This repository follows the codebase from [TULU](https://github.com/allenai/open-instruct).  -->
+One can download the evaluation/training data by
 
 ```bash
 # eval data
@@ -70,7 +71,7 @@ cd LLM_scoring && bash scoring_datasets_local.sh
 ---
 
 ### 🧩 Step 2. Score curation
-Th label curation code base is from [Docta](https://github.com/Docta-ai/docta) in the `./score_curation` path. You can execute the score curation by running
+Th score curation codebase is from [Docta](https://github.com/Docta-ai/docta) in the `./score_curation` path. You can execute the score curation by running
 ```
 cd score_curation && bash diagnose_tulu.sh
 ```
