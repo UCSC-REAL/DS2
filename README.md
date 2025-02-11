@@ -12,7 +12,7 @@
 ------ 
 
 ## 🎉🎉 News 
-- [x] [2025.02.01] 👏👏 Accepted by **ICLR 2025**.
+- [x] [2025.01.22] 👏👏 Accepted by **ICLR 2025**.
 - [x] [2024.11.10] 📢📢 Release the [curated dataset](https://huggingface.co/datasets/jlpang888/cured_dataset_gpt_4o_mini).
 - [x] [2024.10.08] 🚀🚀 Release the code of **DS2**.
 
