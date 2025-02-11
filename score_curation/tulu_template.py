@@ -1,21 +1,13 @@
 # dataset settings
 seed = 0
-
 modality = 'text' # image, text, tabular
-num_classes = 6 # 0 1 2 3 4 5
+num_classes = 6 
 
-labeling_model = 'meta/llama-3.1-8b-instruct'
-
-# DATASET_LIST=('flan_v2' 'cot' 'oasst1' 'lima' 'gpt4_alpaca' 'code_alpaca' 'sharegpt' 'wizardlm' 'open_orca' 'science.evidence_inference' 'science.qasper_truncated_4000' 'science.scifact_json' 'science.scitldr_aic' 'science.scierc_ner' 'science.scierc_relation' 'hard_coded')
+rating_model = 'meta/llama-3.1-8b-instruct'
 dataset_name = 'flan_v2'
-# file_name='tulu'
-# file_name='sharegpt'
 
-# save_path = f'./results/{dataset_name}/'
-# dataset_path = save_path + f'dataset_{dataset_name}.pt'
 
 feature_type = 'embedding'
-
 details = False
 
 

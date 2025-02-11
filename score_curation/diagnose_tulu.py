@@ -14,9 +14,9 @@ torch.multiprocessing.set_sharing_strategy('file_system')
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a classifier')
-    parser.add_argument('--config', help='train config file path', default='./config/tulu_template.py')
+    parser.add_argument('--config', help='train config file path', default='tulu_template.py')
     parser.add_argument('--dataset_name', help='tulu subset name', default='flan_v2')
-    parser.add_argument('--labeling_model', help='model full name', default='meta-llama/Meta-Llama-3.1-8B-Instruct')
+    parser.add_argument('--rating_model', help='model full name', default='meta-llama/Meta-Llama-3.1-8B-Instruct')
 
 
     args = parser.parse_args()
@@ -30,16 +30,16 @@ cfg = Config.fromfile(args.config)
 cfg.data_root = f'../'
 cfg.file_name = args.dataset_name
 cfg.dataset_type = args.dataset_name
-print(f"###### Dataset: {args.dataset_name}  #### Labeling model: {args.labeling_model}")
+print(f"###### Dataset: {args.dataset_name}  #### Rating model: {args.rating_model}")
 
-cfg.save_path = f'./results/{args.labeling_model}/{args.dataset_name}/'
+cfg.save_path = f'./results/{args.rating_model}/{args.dataset_name}/'
 cfg.preprocessed_dataset_path = cfg.save_path + f'dataset_{args.dataset_name}.pt'
 
 cfg.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 ## raw labels 
-cfg.label_path = cfg.data_root + f'model_finetune/selected_data/{args.labeling_model}/{args.dataset_name}/output_labels_revised.pt'
+cfg.label_path = cfg.data_root + f'model_finetune/selected_data/{args.rating_model}/{args.dataset_name}/output_labels_revised.pt'
 
 
 
@@ -64,8 +64,7 @@ from docta.apis import DetectLabel, DetectFeature
 from docta.core.report import Report
 report = Report()
 
-#label-wise: label curation technique
-print("starting label-wise part: label curation!!!")
+#score-wise: score curation technique
 detector = DetectLabel(cfg, dataset, report = report)
 detector.detect()
 

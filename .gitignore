@@ -147,7 +147,6 @@ dmypy.json
 #models & datas
 data/
 model_finetune/selected_data/*
-raw_data/*
 model_finetune/raw_data/*
 
 *.pt
