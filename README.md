@@ -22,9 +22,7 @@ This project is driven by the frequent and widespread errors in raw rating score
 ![Score Transition Matrix](figs/score_transition_matrix.png)
 
 
-
-In response, we introduce **DS2**, a diversity-aware score curation approach designed to enhance data selection.
-
+In response, we introduce **DS2**, a diversity-aware score curation approach to enhance data selection.
 
 ![The Overview of Data Selection Pipeline](figs/pipeline_overview.png)
 
