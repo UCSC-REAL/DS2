@@ -39,7 +39,7 @@ def main(
         }
         ''') 
 
-    print(f"Labeling Model: {deployment_model}")
+    print(f"Rating Model: {deployment_model}")
     print(f"Dataset Name: {dataset_name} ")
     
     
@@ -75,12 +75,11 @@ def main(
 
 
 
-    total_output_labels = []
+    total_output_scores = []
                 
     import concurrent.futures
     from tqdm import tqdm
     
-    print("Start API call labeling...")
     print(f"Total dataset size: {len(inputs)}")
     
     batch_size = 1024
@@ -89,12 +88,12 @@ def main(
     json_pattern = re.compile(r'\{(?:[^{}]|(?R))*\}')
 
 
-    for batch_idx in tqdm(range(split_size), desc=f'API Call Labeling model -- {deployment_model}'):
+    for batch_idx in tqdm(range(split_size), desc=f'API Call rating model -- {deployment_model}'):
         batch_end =  min((batch_idx+1) * batch_size, len(inputs)) # the end index of batch
         batch_inputs = inputs[batch_idx* batch_size:batch_end] ##data range
         
         contents = [None] * len(batch_inputs)
-        output_labels = [None] * len(batch_inputs) 
+        output_scores = [None] * len(batch_inputs) 
         
         with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
             future_to_input = {executor.submit(fetch_content, input, idx): idx for idx, input in enumerate(batch_inputs)}
@@ -119,7 +118,7 @@ def main(
                         try:
                             # extract the json object
                             json_obj = json.loads(matches[-1])
-                            output_labels[idx] = [
+                            output_scores[idx] = [
                                 int(json_obj['Rarity']),
                                 int(json_obj['Complexity']),
                                 int(json_obj['Informativeness']),
@@ -130,29 +129,28 @@ def main(
                             print(f"JSON Decode Error for inputs with {idx}")
                     else:
                         print("fail to match the json format!")
-                        output_labels[idx] = [0,0,0,0]
+                        output_scores[idx] = [0,0,0,0]
                     
                 except Exception as exc:
                     print(f'{inputs[idx]} generated an exception: {exc}')
 
         
-        print(f'### {batch_idx}-th batch\'s output_labels:: length {len(output_labels)} ;; labels : {output_labels}')
-        if len(output_labels) != batch_size:
-            print(f"{batch_idx}-th batch's label output is not matching the original size !!!")
+        if len(output_scores) != batch_size:
+            print(f"{batch_idx}-th batch's score output is not matching the original size !!!")
 
 
-        torch.save(output_labels, path + f"output_labels_{batch_idx}.pt")
-        total_output_labels.extend(output_labels)
+        torch.save(output_scores, path + f"output_scores_{batch_idx}.pt")
+        total_output_scores.extend(output_scores)
 
 
-    print(f'Total data size: {len(inputs)};; Labeling data size: {len(total_output_labels)}')
-    print(f'Total unlabeled data proportion: {np.array(total_output_labels)[:,-1].tolist().count(0)/len(inputs)*100}%')
-    print(f'Overall label score distribution: {Counter(np.array(total_output_labels)[:,-1].tolist())}')
-    print("Finish API CALL labeling!!!")
+    print(f'Total data size: {len(inputs)};; Scoring data size: {len(total_output_scores)}')
+    print(f'Total unrated data proportion: {np.array(total_output_scores)[:,-1].tolist().count(0)/len(inputs)*100}%')
+    print(f'Overall score score distribution: {Counter(np.array(total_output_scores)[:,-1].tolist())}')
+    print("Finish API call scoring!!!")
 
-    print(f"save labels to path: {path + f"total_output_labels.pt"}")
+    print(f"save scores to path: {path + f"total_output_scores.pt"}")
 
-    torch.save(total_output_labels, path + f"total_output_labels.pt")
+    torch.save(total_output_scores, path + f"output_scores.pt")
 
 
 

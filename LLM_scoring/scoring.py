@@ -157,17 +157,16 @@ def main(
     model_name: str = "llama",
     dataset_name: str = 'flan_v2',
     subset_name: str = None,
-    max_new_tokens = 128, #The maximum numbers of tokens to generate
-    seed: int=42, #seed value for reproducibility
+    max_new_tokens = 128, 
+    seed: int=42,
     root_path: str='logs',
-    gpu_id: int=None,
     do_sample: bool=True, 
     temperature: float=1.2, 
     top_k: int=50, 
     top_p: float=0.9,
     repetition_penalty: float=1.0,
     length_penalty: int=1, 
-    output_dir="./",
+    output_dir="./logs/",
     use_cache=False,
     tulu_subsets_list =['flan_v2', 'oasst1', 'wizardlm', 'dolly', 'stanford_alpaca'],
     **kwargs
@@ -212,7 +211,7 @@ def main(
     data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=False) 
     data_loader, model, tokenizer = accelerator.prepare(data_loader, model, tokenizer)
 
-    output_labels = []
+    output_scores = []
     results = [] 
     rating_all = []
 
@@ -245,7 +244,7 @@ def main(
             rating_batch = [None] * len(batch_data)
             for idx, output_text in enumerate(output_text_batch):
 
-                retry_count = 50
+                retry_count = 10
                 try:
                     while retry_count>0:
                         matches = json_pattern.findall(output_text)
@@ -284,31 +283,18 @@ def main(
 
 
             rating_all.extend(rating_batch)
-            print(f"Unlabeled samples size of each batch: {rating_batch.count(None)}")
+            print(f"Unrated samples size of each batch: {rating_batch.count(None)}")
 
         del encodings, output_text_batch, batch
         torch.cuda.empty_cache()
 
 
-    print(f"All unlabeled samples: {rating_all.count(None)}")
+    print(f"Number of unrated samples: {rating_all.count(None)}")
     
     from collections import Counter
     rating_all_revise = [rating[-1] for rating in rating_all if rating is not None]
     print(f"Score distribution: {Counter(rating_all_revise)}")
 
-
-
-
-    '''load parameters'''
-    print('Storing parameters...')
-    if subset_name is not None: 
-        path = os.path.join(root_path, model_name, f"{dataset_name}-{subset_name}")
-    else:
-        path = os.path.join(root_path, model_name, dataset_name)
-
-    if not os.path.exists(path):
-        os.makedirs(path)
-        
 
     # Barrier to ensure all processes have finished saving
     accelerator.wait_for_everyone()
@@ -333,7 +319,7 @@ def main(
 
         # Sort results by original index
         sorted_results = sorted(gathered_results.items(), key=lambda x: x[0])
-        output_labels = [x[1][0] for x in sorted_results]
+        output_scores = [x[1][0] for x in sorted_results]
 
         # Save the merged results
         accelerator.end_training()
@@ -342,20 +328,12 @@ def main(
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
             
- 
-        final_labels_path = f'{output_dir}/output_labels.pt'
+        final_scores_path = f'{output_dir}/output_scores.pt'
         final_results_path = f'{output_dir}/results.pt'
-        print(f"output_labels: {output_labels}")
-        label_all = [label[-1] for label in output_labels]
 
-        print(f"Final score distribution: {Counter(label_all)}")
-
-        print("starting storing the outputs!!!")
         torch.save(sorted_results, final_results_path)
-        torch.save(output_labels, final_labels_path)
+        torch.save(output_scores, final_scores_path)
         print('Finished generation and saving!')
-
-        print("Main process is exiting...")
 
 
 
