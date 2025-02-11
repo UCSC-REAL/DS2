@@ -81,7 +81,7 @@ The generated subsets can be further used for the following LLM instruction tuni
 
 ---
 ### 🧩 Step 4. Finetune & Evaluation
-Given the selected subsets in the `selected_data/` path, one can use the code base from [TULU](https://github.com/allenai/open-instruct) to finetune base models (Mistral or LLaMA) and then do evaluation.  Here, for easily reproduction, one can directly finetune your model by 
+Given the subsets in the `selected_data/` path, one can use the code base from [TULU](https://github.com/allenai/open-instruct) to finetune base models (Mistral or LLaMA) and then do evaluation.  Here, for easily reproduction, one can directly finetune your model by 
 ```
 cd model_finetune/ && bash run_pipeline.sh
 ```
