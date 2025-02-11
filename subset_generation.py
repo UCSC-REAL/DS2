@@ -43,7 +43,7 @@ def score_curating(reports, score_path, confidence_prob):
 
 def extract_data(reports, scores, selected_subset_size):
     
-    # Part 2 (feature-wise): Process rare samples based on 'rare_example' detection
+    # Part 2 (feature-wise): Long-tail Diversity Score Sort
     rare_samples = reports.detection['rare_example'][:len(reports.detection['rare_example']) // 2]
     rare_samples_filtered = np.array(rare_samples)[:, :2]  # Use NumPy for faster operations
 
