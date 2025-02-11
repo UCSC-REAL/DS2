@@ -81,7 +81,7 @@ The generated subsets can be further used for the following LLM instruction tuni
 
 ---
 ### 🧩 Step 4. Finetune & Evaluation
-For easily reproduction, one can directly finetune your model by 
+The generated subsets in the `selected_data/` path can be used for LLM instruction tuning.  Here, for easily reproduction, one can directly finetune the models by 
 ```
 cd model_finetune/ && bash run_pipeline.sh
 ```
