@@ -6,10 +6,10 @@ import fire
 
 def main(
         root_result_path = 'results',
-        train_dataset='all_train',
+        raw_dataset='tulu_300k',
         base_model = "meta-llama/Meta-Llama-3.1-8B",
         rating_model='mistralai/Mistral-7B-Instruct-v0.3',
-        baseline_tag = 'filtered', 
+        baseline_tag = 'ds2_10k', 
         ):
 
     all_results = {}  
@@ -20,7 +20,7 @@ def main(
     for tag in baseline_tags:
         baseline_results = {}
         for eval_dataset in eval_dataset_lists:
-            path = root_result_path + f'/{rating_model}/{train_dataset}/{eval_dataset}/{base_model}/{tag}/metrics.json'
+            path = root_result_path + f'/{rating_model}/{raw_dataset}/{eval_dataset}/{base_model}/{tag}/metrics.json'
             try:
                 with open(path, 'r') as f:
                     json_file = json.load(f)

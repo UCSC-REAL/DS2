@@ -67,43 +67,30 @@ cd LLM_scoring && bash scoring_api.sh
 ---
 
 ### 🧩 Step 2. Score curation
-Th score curation codebase is from [Docta](https://github.com/Docta-ai/docta) in the `./score_curation` path. You can execute the score curation by running
+One can execute the score curation by running
 ```
 cd score_curation && bash diagnose.sh
 ```
-The corresponding curation report files could be found in the path `./score_curation/results`.
+The corresponding curation report files can be found in the path `score_curation_results/`.
 
 
 ---
 
 ### 🧩 Step 3. Data selection
-Given the existing score curation reports, you can directly use the following jupyter notebooks to do data selection including all baselines: `data_generation.ipynb`. The generated subsets can be further used for LLM instruction tuning. Other selected datasets used for ablation study can be also generated from the following jupyter notebooks located in the `./score_curation` path: `data_gen_score_curation.ipynb` and `data_gen_data_scale.ipynb`. In particular, we use `data_gen_score_curation.ipynb` to generate subsets after curating machine-generated raw scores.
-
+Given the existing score curation reports, one can directly generate the high-quality subset by 
+```
+python subset_generation.py
+``` 
+The generated subsets can be further used for the following LLM instruction tuning.
 
 
 ---
 ### 🧩 Step 4. Finetune & Evaluation
-Given the selected subsets in the path `model_finetune/selected_data/`, you can use the code base from [TULU](https://github.com/allenai/open-instruct) to finetune base models (Mistral or LLaMA) and then do evaluation.
-In particular, you can submit the jobs via launcher under the path `model_finetune/`. For example, you can submit the job by running the code 
+Given the selected subsets in the path `selected_data/`, one can use the code base from [TULU](https://github.com/allenai/open-instruct) to finetune base models (Mistral or LLaMA) and then do evaluation.  Here, for convenience, one can also finetune the model by 
 ```
-cd model_finetune/ && launcher run job_pipeline_all.yaml
-```
-
-
-Futhermore, we can also execute the code locally, e.g.,  
-```
-cd model_finetune/ && bash run_pipeline_all.sh
+cd model_finetune/ && bash run_pipeline.sh
 ```
 
-One can present the final result by running 
-```
-python model_finetune/read_results.py
-```
-
-------
-
-## Final results 
-The final results of LLM judging compared with human-annotated dataset LIMA can be found in `lima_compare_plot.ipynb`. Moreover, for the tabular results, you can check the `reading_results.ipynb` jupyter notebook.
 
 ------
 

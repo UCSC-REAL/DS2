@@ -18,6 +18,7 @@ def parse_args():
     parser.add_argument('--dataset_name', help='tulu dataset name', default='tulu_300k')
     parser.add_argument('--rating_model', help='model full name', default='meta-llama/Meta-Llama-3.1-8B-Instruct')
     parser.add_argument('--score_root_path', help='root path of scores', default='../scoring_output/')
+    parser.add_argument('--output_dir', help='output dir', default='../score_curation_results/')
 
 
     args = parser.parse_args()
@@ -31,27 +32,19 @@ cfg = Config.fromfile(args.config)
 cfg.data_root = args.score_root_path
 cfg.file_name = args.dataset_name
 cfg.dataset_type = args.dataset_name
-print(f"###### Dataset: {args.dataset_name}  #### Rating model: {args.rating_model}")
 
-cfg.save_path = f'./results/{args.rating_model}/{args.dataset_name}/'
+cfg.save_path =  args.output_dir + f'{args.rating_model}/{args.dataset_name}/'
 cfg.preprocessed_dataset_path = cfg.save_path + f'dataset_{args.dataset_name}.pt'
-
 cfg.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-
-## raw labels 
-cfg.score_path = cfg.data_root + f'{args.rating_model}/{args.dataset_name}/output_scores_revised.pt'
-
-
+cfg.score_path = cfg.data_root + f'{args.rating_model}/{args.dataset_name}/output_scores_revised.pt' ## raw labels 
 
 dataset = TULU_RLHF(cfg, args, train=True)
 
-test_dataset = None
-print(f'TULU sub-dataset {args.dataset_name} load finished')
+print(f'Dataset {args.dataset_name} load finished')
 
 
 '''preprocess data'''
-pre_processor = Preprocess(cfg, dataset, test_dataset)
+pre_processor = Preprocess(cfg, dataset)
 pre_processor.encode_feature()
 print(pre_processor.save_ckpt_idx)
 
