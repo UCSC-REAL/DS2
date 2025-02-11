@@ -10,22 +10,17 @@ class TULU_RLHF(CustomizedDataset):
     def __init__(self, cfg, args, train=True):
 
         ## dataset 
-        self.jsonfilename =  cfg.data_root + f'model_finetune/selected_data/{args.rating_model}/{args.dataset_name}/full_dataset.json'
-        label_path = cfg.label_path
+        score_path = cfg.score_path
+        self.feature_raw = load_dataset('jlpang888/tulu_300k')['train']
 
-        try:
-            self.load_data()
-        except:
-            raise ImportError(f'Data must be downloaded from Huggingface and saved to {cfg.data_root}. self.jsonfilename is {self.jsonfilename}')
-        
         ###########################################################
         # load & save datasets
         os.makedirs(cfg.save_path, exist_ok=True)
         
 
-        print(f"#### labeling path: {label_path} ")
+        print(f"#### score path: {score_path} ")
 
-        label = torch.load(label_path)
+        score = torch.load(score_path)
         print(f'preprocessed dataset {cfg.preprocessed_dataset_path}...')
 
         feature = []
@@ -36,16 +31,15 @@ class TULU_RLHF(CustomizedDataset):
                 conversation += f"###{messege['role']}: {messege['content']}\n"
             feature.append(conversation)
 
-        label = np.array(label)
-        # import pdb;pdb.set_trace()
-        torch.save({'feature': feature, 'label': label}, cfg.preprocessed_dataset_path)
+        score = np.array(score)
+        torch.save({'feature': feature, 'label': score}, cfg.preprocessed_dataset_path)
         print(f'Saved preprocessed dataset to {cfg.preprocessed_dataset_path}')
         
-        assert len(feature) == len(label)
-        print(f'The whole dataset size: {len(feature)}')
+        assert len(feature) == len(score)
+        print(f'Whole dataset size: {len(feature)}')
         
         index = range(len(feature))
-        super(TULU_RLHF, self).__init__(feature, label, index=index, preprocess=None)
+        super(TULU_RLHF, self).__init__(feature, score, index=index, preprocess=None)
                 
                 
 
@@ -61,16 +55,6 @@ class TULU_RLHF(CustomizedDataset):
         # dict{Human: xxx, Assistant: xxx}
 
     
-    def load_data(self):
-        feature_all = []
-        with open(self.jsonfilename, mode="rt", encoding='utf-8') as f:
-            data = f.read().strip().splitlines()
-            for i in range(len(data)):
-                json_tmp = json.loads(data[i])
-                #feature_tmp: {'prompt': 'Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nDo Psychiatrists in different cultures need to study differently to accommodate the cultural differences in individuals?\n\n\n### Response:\n', 'response': 'Some areas would require a greater awareness of local cultural norms than others, but I would expect that basic psychiatry would require the same kinds of knowledge and skills across different cultures.  In order to practice psychiatry successfully, you would need to understand the cultural context in which\n'}
-                # feature = self.split_string_by_keywords(json_tmp, keywords = ['prompt:', 'response:']) ## keywords need to be revised further
-                feature_all.append(json_tmp)
-        self.feature_raw = feature_all
 
 
     def filter_data(self, key = 'Assistant:'):

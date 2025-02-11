@@ -1,1 +1,1 @@
-wget https://huggingface.co/datasets/jlpang888/DS2_raw_300k/resolve/main/data/train-00000-of-00001.parquet
+wget https://huggingface.co/datasets/jlpang888/tulu_300k/resolve/main/data/train-00000-of-00001.parquet

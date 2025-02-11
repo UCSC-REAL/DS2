@@ -14,6 +14,7 @@ import regex as re
 from datasets import load_dataset
 import sys
 import gc
+from collections import Counter
 
 ### store the model 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -37,49 +38,19 @@ class CustomDataset(Dataset):
         return self
     
 
-def preprocessing(dataset_name, tulu_subsets_list, prompt_template, system_prompt, user_prompt):
+def preprocessing(dataset_name, prompt_template, system_prompt, user_prompt):
     inputs = []
 
-    if dataset_name in tulu_subsets_list:
-        data = load_dataset('json', data_files=f'./train_data/{dataset_name}_data.jsonl')
-        dialogs = data['train']
-
+    if dataset_name == 'tulu_300k':
+        dialogs = load_dataset('jlpang888/tulu_300k')['train']
         for dialog in dialogs:
             conversation = ""
             for message in dialog['messages']:  #[{{'role': 'user', 'content': 'blabla'}, {'role': 'assistant', 'content': 'blabla'}]
                 conversation += f"### {message['role']}: {message['content']}\n"
             inputs.append(prompt_template.format(system_prompt, user_prompt, conversation))
     
-    #load data from Huggingface
-    elif 'alpaca' in dataset_name:
-        dataset_name = 'tatsu-lab/alpaca'
-        print(f"Loading dataset: {dataset_name}")
-        dialogs = load_dataset(dataset_name)['train']
-        
-        for dialog in dialogs['text']:
-            inputs.append(prompt_template.format(system_prompt, user_prompt, conversation))
-
-    elif 'dolly' in dataset_name:        
-        dataset_name = 'databricks/databricks-dolly-15k'
-        print(f"Loading dataset: {dataset_name}")
-        dialogs = load_dataset(dataset_name)['train']
-        
-        for dialog in dialogs:
-            conversation = f"### Instruction: {dialog['instruction']} ### Response: {dialog['response']}"
-            inputs.append(prompt_template.format(system_prompt, user_prompt, conversation))
-
-    elif 'wizardLM' in dataset_name:
-        dataset_name = 'WizardLMTeam/WizardLM_evol_instruct_V2_196k'
-        print(f"Loading dataset: {dataset_name}")
-        dialogs = load_dataset(dataset_name)['train']
-        
-        for dialog in dialogs['conversations']:
-            f"### Human: {dialog[0]['value']} ### Assistant: {dialog[1]['value']}"
-            conversation =  f"### Human: {dialog[0]['value']} ### Assistant: {dialog[1]['value']}"
-            inputs.append(prompt_template.format(system_prompt, user_prompt, conversation))
-
     else:
-        print("Dataset can not be found!")
+        raise NotImplementedError
     
     return inputs
 
@@ -153,6 +124,27 @@ def gen_prompt():
         
     return system_prompt, user_prompt 
 
+
+def score_compress(original_scores):
+    original_scores = [score[-1] for score in original_scores] #take the overall rating scores
+    print(f"Original score distribution{Counter(original_scores)}")
+
+    #rematching to [0,1,2,3,4,5]
+    scores_revised = []
+    for score in original_scores:
+        if score < 4:
+            scores_revised.append(4)
+        elif score > 10:
+            scores_revised.append(9)
+        else:
+            scores_revised.append(score)
+
+    scores_revised = [score - 4 for score in scores_revised] 
+    print(f"Revised scores distribution {Counter(scores_revised)}\n")
+
+    return scores_revised
+
+
 def main(
     model_name: str = "llama",
     dataset_name: str = 'flan_v2',
@@ -168,11 +160,9 @@ def main(
     length_penalty: int=1, 
     output_dir="./logs/",
     use_cache=False,
-    tulu_subsets_list =['flan_v2', 'oasst1', 'wizardlm', 'dolly', 'stanford_alpaca'],
     **kwargs
-):
-
-    # Set the seeds for reproducibility
+    ):
+    
     if is_xpu_available():
         torch.xpu.manual_seed(seed)
     else:
@@ -204,7 +194,7 @@ def main(
     tokenizer.pad_token_id = tokenizer.eos_token_id
 
     print("Preprocessing dataset...")
-    inputs = preprocessing(dataset_name, tulu_subsets_list, prompt_template, system_prompt, user_prompt)
+    inputs = preprocessing(dataset_name, prompt_template, system_prompt, user_prompt)
 
 
     dataset = CustomDataset(dataset_name, inputs)
@@ -328,11 +318,13 @@ def main(
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
             
-        final_scores_path = f'{output_dir}/output_scores.pt'
-        final_results_path = f'{output_dir}/results.pt'
+        ## rematching raw score to [0,1,2,3,4,5]
+        output_scores_revised = score_compress(output_scores)
 
-        torch.save(sorted_results, final_results_path)
-        torch.save(output_scores, final_scores_path)
+        torch.save(sorted_results, f'{output_dir}/results.pt')
+        torch.save(output_scores, f'{output_dir}/output_scores.pt')
+        torch.save(output_scores_revised, f'{output_dir}/output_scores_revised.pt')
+
         print('Finished generation and saving!')
 
 

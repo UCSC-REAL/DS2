@@ -19,10 +19,31 @@ client = AzureOpenAI(
 )
 
 
+
+def score_compress(original_scores):
+    original_scores = [score[-1] for score in original_scores] #take the overall rating scores
+    print(f"Original score distribution{Counter(original_scores)}")
+
+    #rematching to [0,1,2,3,4,5]
+    scores_revised = []
+    for score in original_scores:
+        if score < 4:
+            scores_revised.append(4)
+        elif score > 10:
+            scores_revised.append(9)
+        else:
+            scores_revised.append(score)
+
+    scores_revised = [score - 4 for score in scores_revised] 
+    print(f"Revised scores distribution {Counter(scores_revised)}\n")
+
+    return scores_revised
+
+
 def main(
     deployment_model: str = 'gpt-4o-mini-2024-08-28',
     dataset_name: str = 'flan_v2',
-    dataset_type: str='train',
+    output_dir="./logs/",
     ):
 
 
@@ -41,12 +62,12 @@ def main(
 
     print(f"Rating Model: {deployment_model}")
     print(f"Dataset Name: {dataset_name} ")
-    
-    
     print("Preprocessing dataset...")
-
-    data = load_dataset('json', data_files=f'data/train_data/{dataset_name}_data.jsonl', split=None, cache_dir=None)
-    dialogs = data['train']
+    
+    if dataset_name == 'tulu_300k':
+        dialogs = load_dataset('jlpang888/tulu_300k')['train']
+    else:
+        raise NotImplementedError
     
     inputs= []
     for dialog in dialogs:
@@ -57,9 +78,9 @@ def main(
         inputs.append(pre_prompt + conversation + "\n### Rating:")
 
 
-    path = f"./logs-api/{deployment_model}/{dataset_name}/"
-    if not os.path.exists(path):
-        os.makedirs(path)
+    output_path = output_dir + f"{deployment_model}/{dataset_name}/"
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
 
 
     def fetch_content(input, idx):
@@ -139,7 +160,7 @@ def main(
             print(f"{batch_idx}-th batch's score output is not matching the original size !!!")
 
 
-        torch.save(output_scores, path + f"output_scores_{batch_idx}.pt")
+        torch.save(output_scores, output_path + f"output_scores_{batch_idx}.pt")
         total_output_scores.extend(output_scores)
 
 
@@ -148,10 +169,13 @@ def main(
     print(f'Overall score score distribution: {Counter(np.array(total_output_scores)[:,-1].tolist())}')
     print("Finish API call scoring!!!")
 
-    print(f"save scores to path: {path + f"total_output_scores.pt"}")
+    print(f"save scores to path: {output_path + f"total_output_scores.pt"}")
 
-    torch.save(total_output_scores, path + f"output_scores.pt")
-
+    ## rematching raw score to [0,1,2,3,4,5]
+    output_scores_revised = score_compress(total_output_scores)
+    
+    torch.save(total_output_scores, output_path + f"output_scores.pt")
+    torch.save(output_scores_revised, output_path + f"output_scores_revised.pt")
 
 
 if __name__ == '__main__':

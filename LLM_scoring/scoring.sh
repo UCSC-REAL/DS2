@@ -3,11 +3,11 @@ export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 NUM_GPUS=8
 
 MODEL_NAME="meta-llama/Meta-Llama-3.1-8B-Instruct" 
-DATASET_LIST=('flan_v2' 'oasst1' 'wizardlm' 'dolly' 'stanford_alpaca') 
+DATASET_LIST=('tulu_300k') 
 
 
 
-OUTPUT_DIR="scoring_output/"
+OUTPUT_DIR="../scoring_output/"
 mkdir -p $OUTPUT_DIR
 
 for DATASET_NAME in "${DATASET_LIST[@]}"; do
@@ -21,6 +21,7 @@ for DATASET_NAME in "${DATASET_LIST[@]}"; do
         --num_machines 1 \
         --num_processes $NUM_GPUS \
         --dynamo_backend no \
+        --main_process_port 29501 \
         scoring.py \
         --model_name $MODEL_NAME \
         --output_dir $OUTPUT_DIR \

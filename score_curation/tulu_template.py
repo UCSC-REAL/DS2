@@ -4,7 +4,7 @@ modality = 'text' # image, text, tabular
 num_classes = 6 
 
 rating_model = 'meta/llama-3.1-8b-instruct'
-dataset_name = 'flan_v2'
+dataset_name = 'tulu_300k'
 
 
 feature_type = 'embedding'

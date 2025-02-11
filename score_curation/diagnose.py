@@ -15,8 +15,9 @@ torch.multiprocessing.set_sharing_strategy('file_system')
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a classifier')
     parser.add_argument('--config', help='train config file path', default='tulu_template.py')
-    parser.add_argument('--dataset_name', help='tulu subset name', default='flan_v2')
+    parser.add_argument('--dataset_name', help='tulu dataset name', default='tulu_300k')
     parser.add_argument('--rating_model', help='model full name', default='meta-llama/Meta-Llama-3.1-8B-Instruct')
+    parser.add_argument('--score_root_path', help='root path of scores', default='../scoring_output/')
 
 
     args = parser.parse_args()
@@ -27,7 +28,7 @@ def parse_args():
 '''load data'''
 args = parse_args()
 cfg = Config.fromfile(args.config)
-cfg.data_root = f'../'
+cfg.data_root = args.score_root_path
 cfg.file_name = args.dataset_name
 cfg.dataset_type = args.dataset_name
 print(f"###### Dataset: {args.dataset_name}  #### Rating model: {args.rating_model}")
@@ -39,7 +40,7 @@ cfg.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 ## raw labels 
-cfg.label_path = cfg.data_root + f'model_finetune/selected_data/{args.rating_model}/{args.dataset_name}/output_labels_revised.pt'
+cfg.score_path = cfg.data_root + f'{args.rating_model}/{args.dataset_name}/output_scores_revised.pt'
 
 
 
