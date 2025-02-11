@@ -150,6 +150,7 @@ model_finetune/selected_data/*
 data_scale_models/
 finetune_70B_results
 finetune_lima_result
+data_scale_results
 finetune_result
 LLM_scoring/tulu_split_json/*
 LLM_scoring/labeling_intern_cluster/train_data/*
