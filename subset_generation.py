@@ -7,6 +7,7 @@ import math
 import fire
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
 seed=3
 random.seed(seed)
@@ -88,8 +89,10 @@ def print_score_heatmap(reports, dataset_name, save_path="figures/"):
     plt.xlabel('Scores', fontsize=18)
     plt.ylabel('Scores', fontsize=18)
     
-    save_path = save_path + f"{dataset_name}_heatmap.pdf"
-    plt.savefig(save_path, format="pdf", bbox_inches="tight")
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+        
+    plt.savefig(save_path + f"{dataset_name}_heatmap.pdf", format="pdf", bbox_inches="tight")
     
 
 def main(
