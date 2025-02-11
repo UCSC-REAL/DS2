@@ -45,7 +45,7 @@ bash model_finetune/prepare_train_data.sh
 
 
 ----- 
-## 🚀🚀 Get Started
+## 🚀🚀 Quick Start
 
 ### 🧩 Step 1. LLM-prompt-based rating
 
