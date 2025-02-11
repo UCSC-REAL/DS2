@@ -35,10 +35,10 @@ One can download the evaluation/training data by
 
 ```bash
 # eval data
-bash model_finetune/scripts/prepare_eval_data.sh
+bash model_finetune/prepare_eval_data.sh
 
 # train data 
-bash model_finetune/scripts/prepare_train_data.sh
+bash model_finetune/prepare_train_data.sh
 ```
 
 

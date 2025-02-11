@@ -2,47 +2,25 @@ import os
 import json
 import pandas as pd
 import fire
-'''
-{baseline_tag: 
-    { 
-        eval_dataset:{ }
-                        
-    }
-}
-'''
+
 
 def main(
         root_result_path = 'results',
         train_dataset='all_train',
         base_model = "meta-llama/Meta-Llama-3.1-8B",
-        labeling_model='mistralai/Mistral-7B-Instruct-v0.3',
+        rating_model='mistralai/Mistral-7B-Instruct-v0.3',
         baseline_tag = 'filtered', 
         ):
 
     all_results = {}  
-
-    ### full results print ####
-
-    # base_model ='meta-llama/Llama-2-7b-hf'
-    # base_model ="meta-llama/Meta-Llama-3.1-8B" 
-    # base_model='mistralai/Mistral-7B-v0.3'
-
-
-    # labeling_model="meta-llama/Meta-Llama-3.1-8B-Instruct"
-    # labeling_model="gpt-4o-mini"
-    # labeling_model='mistralai/Mistral-7B-Instruct-v0.3'
-
-
-    # baseline_tags=['base','random',  'completion', 'perplexity',  'knn',  'label-filtered', 'diversity-filtered', 'less', 'filtered', 'full'] #baselines
     baseline_tags=[baseline_tag] #baselines
-
     eval_dataset_lists = ['mmlu', 'truthfulqa', 'gsm', 'bbh', 'tydiqa']
 
     # Load results from JSON files
     for tag in baseline_tags:
         baseline_results = {}
         for eval_dataset in eval_dataset_lists:
-            path = root_result_path + f'/{labeling_model}/{train_dataset}/{eval_dataset}/{base_model}/{tag}/metrics.json'
+            path = root_result_path + f'/{rating_model}/{train_dataset}/{eval_dataset}/{base_model}/{tag}/metrics.json'
             try:
                 with open(path, 'r') as f:
                     json_file = json.load(f)
@@ -70,8 +48,8 @@ def main(
                 elif eval_dataset == 'gsm':
                     value = round(all_results[tag][eval_dataset]['exact_match']* 100, 1)
                 elif eval_dataset == 'truthfulqa':
-                    # value = round(all_results[tag][eval_dataset]["truth-info acc"]* 100, 1)
-                    value = round(all_results[tag][eval_dataset]["MC2"]* 100, 1)
+                    value = round(all_results[tag][eval_dataset]["truth-info acc"]* 100, 1)
+                    # value = round(all_results[tag][eval_dataset]["MC2"]* 100, 1)
                 else:
                     print("unknown eval dat·aset!")
 
@@ -84,15 +62,13 @@ def main(
 
     # Calculate the average accuracy for each baseline
     df_results['average acc'] = df_results.mean(axis=1).round(1)
-    # print(f"### base_model: {base_model}")
-    # print(f"### labeling_model: {labeling_model}")
 
 
     # Ensure full display of the DataFrame
-    pd.set_option('display.max_rows', None)  # Show all rows
-    pd.set_option('display.max_columns', None)  # Show all columns
-    pd.set_option('display.width', 1000)  # Set display width
-    pd.set_option('display.max_colwidth', None)  # Set max column width
+    pd.set_option('display.max_rows', None)  
+    pd.set_option('display.max_columns', None)  
+    pd.set_option('display.width', 1000)  
+    pd.set_option('display.max_colwidth', None) 
 
     print(df_results)
 

@@ -1,51 +1,16 @@
 #!/bin/bash
-
 export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 NUM_GPUS=8
+SEED=42 
 
-# TRAIN_DATASET_LIST=('flan_v2' 'oasst1' 'wizardlm' 'dolly' 'stanford_alpaca' 'all_train') # full data list
-TRAIN_DATASET_LIST=('all_train') 
-SEED=42 #default
-#########################################
-############ labeling_models #############
+TRAIN_DATASET_LIST=('flan_v2' 'oasst1' 'wizardlm' 'dolly' 'stanford_alpaca' 'all_train') # full data list
 
-labeling_model="meta-llama/Meta-Llama-3.1-8B-Instruct"
-# labeling_model="gpt-4o-mini"
-# labeling_model='mistralai/Mistral-7B-Instruct-v0.3'
-
-############ labeling_models #############
-#########################################
-
-
-######################################
-############ base_models #############
+rating_model="meta-llama/Meta-Llama-3.1-8B-Instruct" #"gpt-4o-mini" 'mistralai/Mistral-7B-Instruct-v0.3'
 
 declare -A base_models
-# base_models["meta-llama/Llama-2-7b-hf"]="128 1 4096"  
-base_models["meta-llama/Meta-Llama-3.1-8B"]="64 1 2048" # TOTAL_BATCH_SIZE BATCH_SIZE_PER_GPU max_seq_length
-# base_models["mistralai/Mistral-7B-v0.3"]="128 1 2048"
-# base_models["meta-llama/Llama-2-13b-hf"]="128 1 2048"
-# base_models["meta-llama/Meta-Llama-3.1-70B"]="8 1 1024"
-
-############ base_models #############
-######################################
-
-########################################################
-
-## # data_types used for ablation study, which determines the finetuned model
-
-############# basic baselines ############
-data_types=( 'completion' 'perplexity' 'knn' 'less' 'full' 'random' 'label-filtered' 'diversity-filtered' 'filtered' )  ##combined
-
-######### baselines with data scaling ########
-## selected baselines: random, less, label-filtered, diversity-filtered, filtered
-## selected data volume: 2k, 5k, 10k, 20k, 40k
-## Examples: data_types=('filtered-2k' 'filtered-5k' 'filtered-10k' 'filtered-20k' 'filtered-40k')
-
-############# baselines with score curation ##########
-## selected baselines: label-filtered, diversity-filtered, filtered
-# confidence_prob=[0-1] ##e.g., 0.5
-# Examples: data_types=data_types=('label-filtered-cured-${confidence_prob}' 'diversity-filtered-cured-${confidence_prob}' 'filtered-cured-${confidence_prob}')
+base_models["meta-llama/Meta-Llama-3.1-8B"]="128 1 2048"  # TOTAL_BATCH_SIZE BATCH_SIZE_PER_GPU max_seq_length
+# data types represent the generated subsets by baselines
+data_types=('completion' 'perplexity' 'knn' 'less' 'full' 'random' 'label-filtered' 'diversity-filtered' 'filtered')  
 
 
 
@@ -53,12 +18,7 @@ data_types=( 'completion' 'perplexity' 'knn' 'less' 'full' 'random' 'label-filte
 ######## model finetuning on selected training data ######### 
 #############################################################
 
-echo "###### All data types here:: ${data_types[@]}"
-echo "###### All training datasets here:: ${TRAIN_DATASET_LIST[@]}"
-
-
 cluster_root_path="output" 
-
 mkdir -p $cluster_root_path
 
 for base_model in "${!base_models[@]}"
@@ -72,12 +32,8 @@ do
     for train_dataset_name in "${TRAIN_DATASET_LIST[@]}"
     do
 
-        echo "###### Processing training dataset :: ${train_dataset_name}"
-
-
         for data_type in "${data_types[@]}"
         do
-            echo "###### Processing data type:: ${data_type}"
 
             if [[ $data_type == "base" ]]; then
                 echo "Skipping base model finetune"
@@ -85,10 +41,7 @@ do
             fi
 
             mkdir -p $cluster_root_path/models/
-
-            echo "Processing data type: $data_type"
-
-            train_data="selected_data/${labeling_model}/${train_dataset_name}/${data_type}_dataset.json"
+            train_data="selected_data/${rating_model}/${train_dataset_name}/${data_type}_dataset.json"
 
             GRADIENT_ACC_STEPS=$(($TOTAL_BATCH_SIZE/$NUM_GPUS/$BATCH_SIZE_PER_GPU))
             echo "Training ${base_model} using $NUM_GPUS GPUs, $BATCH_SIZE_PER_GPU batch size per GPU, $GRADIENT_ACC_STEPS gradient accumulation steps"
@@ -99,7 +52,7 @@ do
                 --mixed_precision bf16 \
                 --num_machines 1 \
                 --num_processes $NUM_GPUS \
-                open_instruct/finetune.py \
+                finetune.py \
                 --model_name_or_path $base_model \
                 --use_lora \
                 --lora_rank 64 \
@@ -119,20 +72,20 @@ do
                 --warmup_ratio 0.03 \
                 --weight_decay 0. \
                 --num_train_epochs 5 \
-                --output_dir $cluster_root_path/models/${labeling_model}/${train_dataset_name}/${base_model}/lora_${data_type}/ \
+                --output_dir $cluster_root_path/models/${rating_model}/${train_dataset_name}/${base_model}/lora_${data_type}/ \
                 --with_tracking \
                 --report_to tensorboard \
                 --logging_steps 1
 
-            python open_instruct/merge_lora.py \
+            python merge_lora.py \
                 --base_model_name_or_path $base_model \
-                --lora_model_name_or_path $cluster_root_path/models/${labeling_model}/${train_dataset_name}/${base_model}/lora_${data_type}/ \
-                --output_dir $cluster_root_path/models/${labeling_model}/${train_dataset_name}/${base_model}/lora_merged_${data_type}/ \
+                --lora_model_name_or_path $cluster_root_path/models/${rating_model}/${train_dataset_name}/${base_model}/lora_${data_type}/ \
+                --output_dir $cluster_root_path/models/${rating_model}/${train_dataset_name}/${base_model}/lora_merged_${data_type}/ \
                 --save_tokenizer
 
             sleep 10s
 
-            rm -rf $cluster_root_path/models/${labeling_model}/${train_dataset_name}/${base_model}/lora_${data_type}
+            rm -rf $cluster_root_path/models/${rating_model}/${train_dataset_name}/${base_model}/lora_${data_type}
 
         done
     done
@@ -140,20 +93,20 @@ done
 
 
 wait
-sleep 10s
+
+############################################################
+###############  finetuned model evaluation ################
+############################################################
 
 echo "starting evaluating finetuned models..."
 
-# # ############################################################
-# # ######## ####  finetuned model  evaluation ######## #### 
-# # ###########################################################
 for base_model in "${!base_models[@]}"; do
 
     for train_dataset_name in "${TRAIN_DATASET_LIST[@]}"; do
 
         for data_type in "${data_types[@]}"; do
 
-            model_name_or_path=$cluster_root_path/models/${labeling_model}/${train_dataset_name}/${base_model}/lora_merged_${data_type}
+            model_name_or_path=$cluster_root_path/models/${rating_model}/${train_dataset_name}/${base_model}/lora_merged_${data_type}
 
             if [[ $data_type == "base" ]]; then
                 echo "base model evaluation"
@@ -162,11 +115,9 @@ for base_model in "${!base_models[@]}"; do
 
             echo "###### Processing data type:: ${data_type}"
 
-            ####MMLU: factual knowledge
-            #### ./scripts/eval/mmlu.sh "$train_dataset_name" "$labeling_model" "$base_model" "$models" "$save_dirs" "$cuda_devices"
-            
+            #### MMLU: factual knowledge            
             eval_dataset_name='mmlu'
-            local_save_dir=${cluster_root_path}/results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
+            local_save_dir=${cluster_root_path}/results/${rating_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
 
             CUDA_VISIBLE_DEVICES=0 python -m eval.mmlu.run_eval \
             --ntrain 0 \
@@ -176,13 +127,11 @@ for base_model in "${!base_models[@]}"; do
             --tokenizer_name_or_path  $model_name_or_path \
             --eval_batch_size 8  &
 
-            # # ### reasoning
-            # # ./scripts/eval/gsm.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
-            
+            ##### GSM8k: reasoning            
             eval_dataset_name='gsm'
-            local_save_dir=${cluster_root_path}/results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
+            local_save_dir=${cluster_root_path}/results/${rating_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
 
-            CUDA_VISIBLE_DEVICES=2,5 python -m eval.gsm.run_eval \
+            CUDA_VISIBLE_DEVICES=1 python -m eval.gsm.run_eval \
                 --data_dir raw_data/eval/gsm/ \
                 --max_num_examples 200 \
                 --save_dir ${local_save_dir} \
@@ -191,13 +140,11 @@ for base_model in "${!base_models[@]}"; do
                 --n_shot 8 \
                 --use_vllm &
 
-            # BBH: 
-            ## ./scripts/eval/bbh.sh "$train_dataset_name" "$labeling_model" "$base_model"  "${!models[@]}" "${!save_dirs[@]}" "$cuda_devices"
-        
+            ###### BBH: reasoning
             eval_dataset_name='bbh'
-            local_save_dir=${cluster_root_path}/results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
+            local_save_dir=${cluster_root_path}/results/${rating_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
 
-            CUDA_VISIBLE_DEVICES=1 python -m eval.bbh.run_eval \
+            CUDA_VISIBLE_DEVICES=2 python -m eval.bbh.run_eval \
                 --data_dir raw_data/eval/bbh \
                 --save_dir ${local_save_dir} \
                 --model_name_or_path $model_name_or_path  \
@@ -205,11 +152,9 @@ for base_model in "${!base_models[@]}"; do
                 --max_num_examples_per_task 40 \
                 --use_vllm &
 
-            # # ### truthfulness
-            # # ./scripts/eval/truthfulqa.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
-            
+            ##### truthfulness            
             eval_dataset_name='truthfulqa'
-            local_save_dir=${cluster_root_path}/results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
+            local_save_dir=${cluster_root_path}/results/${rating_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
 
             CUDA_VISIBLE_DEVICES=3 python -m eval.truthfulqa.run_eval \
                 --data_dir raw_data/eval/truthfulqa \
@@ -224,11 +169,9 @@ for base_model in "${!base_models[@]}"; do
                 --load_in_8bit &
 
 
-            # # # # ### multilinguality
-            # # # # ./scripts/eval/tydiqa.sh "$train_dataset_name" "$labeling_model" "$base_model" "$model_declaration" "$save_dirs_declaration" "$cuda_devices_declaration"
-            
+            ###### multilinguality            
             eval_dataset_name='tydiqa'
-            local_save_dir=${cluster_root_path}/results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
+            local_save_dir=${cluster_root_path}/results/${rating_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
 
             CUDA_VISIBLE_DEVICES=4 python -m eval.tydiqa.run_eval \
                 --data_dir raw_data/eval/tydiqa/ \
@@ -254,12 +197,12 @@ for base_model in "${!base_models[@]}"; do
     for train_dataset_name in "${TRAIN_DATASET_LIST[@]}"; do
 
         for data_type in "${data_types[@]}"; do        
-        echo "###### Processing Base model :: ${labeling_model}"
-        echo "###### Processing Labeling model :: ${base_model}"
-        echo "###### Processing training dataset :: ${train_dataset_name}"
-        echo "###### Processing data type :: ${data_type}"
+        echo "*** Processing rating model:: ${rating_model} ***"
+        echo "*** Processing Base model:: ${base_model} ***"
+        echo "*** Processing training dataset:: ${train_dataset_name} ***"
+        echo "*** Processing data type:: ${data_type} ***"
 
-        python3 read_results.py --root_result_path "${cluster_root_path}/results" --train_dataset $train_dataset_name --base_model $base_model --labeling_model $labeling_model --baseline_tag $data_type
+        python3 read_results.py --root_result_path "${cluster_root_path}/results" --train_dataset $train_dataset_name --base_model $base_model --rating_model $rating_model --baseline_tag $data_type
 
         done
 
