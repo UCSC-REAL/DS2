@@ -72,7 +72,7 @@ The corresponding curation report files can be found in the path `score_curation
 ---
 
 ### 🧩 Step 3. Data selection
-Given the existing score curation reports, one can directly generate the high-quality subset by 
+Given the generated score curation reports, one can directly generate the high-quality subset by 
 ```
 python subset_generation.py
 ``` 
