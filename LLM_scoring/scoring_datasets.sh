@@ -17,13 +17,17 @@ OUTPUT_DIR="scoring_output/"
 mkdir -p $OUTPUT_DIR
 
 for DATASET_NAME in "${DATASET_LIST[@]}"; do
+
+    : > "$LOG_FILE"
+    LOG_FILE=${OUTPUT_DIR}/${DATASET_NAME}.log
+
     echo "Scoring ${DATASET_NAME} dataset using model ${MODEL_NAME} on $NUM_GPUS GPUs" | tee -a "$LOG_FILE"
     accelerate launch \
         --mixed_precision bf16 \
         --num_machines 1 \
         --num_processes $NUM_GPUS \
         --dynamo_backend no \
-        scoring_json.py \
+        scoring.py \
         --model_name $MODEL_NAME \
         --output_dir $OUTPUT_DIR \
         --dataset_name $DATASET_NAME 2>&1 | tee -a "$LOG_FILE"

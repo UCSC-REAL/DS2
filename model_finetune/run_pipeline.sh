@@ -90,7 +90,6 @@ do
 
             train_data="selected_data/${labeling_model}/${train_dataset_name}/${data_type}_dataset.json"
 
-            echo "train data path: $train_data"
             GRADIENT_ACC_STEPS=$(($TOTAL_BATCH_SIZE/$NUM_GPUS/$BATCH_SIZE_PER_GPU))
             echo "Training ${base_model} using $NUM_GPUS GPUs, $BATCH_SIZE_PER_GPU batch size per GPU, $GRADIENT_ACC_STEPS gradient accumulation steps"
             echo "Training data path: ${train_data}"

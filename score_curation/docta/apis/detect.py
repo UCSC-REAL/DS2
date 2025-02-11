@@ -72,7 +72,7 @@ class DetectLabel(Diagnose):
         num_label_errors = np.sum(sel_noisy_summary)
         print(f'[SimiFeat] We find {num_label_errors} corrupted instances from {sel_noisy_summary.shape[0]} instances')
         idx = np.argsort(noisy_avg)[-num_label_errors:][::-1] # raw index
-        suggest_matrix = (suggest_label_rec + 1) / (np.sum(suggest_label_rec, 1).reshape(-1,1) + self.cfg.num_classes) # #samples * #classes
+        suggest_matrix = (suggest_label_rec + 1) / (np.sum(suggest_label_rec, 1).reshape(-1,1) + self.cfg.num_classes) # #samples * classes
 
         # update report
         detection = dict(

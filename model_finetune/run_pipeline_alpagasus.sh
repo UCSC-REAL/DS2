@@ -24,8 +24,11 @@ labeling_model="gpt-4o-mini"
 
 declare -A base_models
 # base_models["StudentLLM/Alpagasus-2-7B-QLoRA"]="128 4 4096"  
-base_models["meta-llama/Llama-2-7b-hf"]="128 2 2048"
+base_models["meta-llama/Llama-2-7b-hf"]="512 32 2048"
+# base_models["meta-llama/Llama-2-7b-hf"]="8 1 128"
 
+# base_models["meta-llama/Llama-3.2-1B"]="8 1 128"
+# base_models["meta-llama/Llama-3.2-3B"]="8 1 128"
 # base_models["meta-llama/Meta-Llama-3.1-8B"]="8 1 128" # TOTAL_BATCH_SIZE BATCH_SIZE_PER_GPU max_seq_length
 # base_models["mistralai/Mistral-7B-v0.3"]="128 4 2048"
 # base_models["meta-llama/Llama-2-13b-hf"]="128 1 2048"
@@ -44,7 +47,7 @@ echo "###### All training datasets here:: ${TRAIN_DATASET_LIST[@]}"
 
 # cluster_root_path="output" ## . for local
 
-cluster_root_path="/mnt/server0-A/jinlong/alpagasus-output" ##  
+cluster_root_path="../alpagasus-output" ##  
 
 mkdir -p $cluster_root_path
 
@@ -95,15 +98,13 @@ do
 
             # --main_process_port 29501 \
 
+
             accelerate launch \
                 --num_machines 1 \
                 --num_processes $NUM_GPUS \
                 --mixed_precision bf16 \
-                --use_fsdp \
-                --fsdp_sharding_strategy FULL_SHARD \
-                --fsdp_offload_params true \
-                --fsdp_activation_checkpointing true \
-                --main_process_port 29501 \
+                --use_deepspeed \
+                --deepspeed_config_file ds_configs/stage3_no_offloading_accelerate.conf \
                 open_instruct/finetune.py \
                 --model_name_or_path $base_model \
                 --gradient_checkpointing \
@@ -127,15 +128,15 @@ do
                 --output_dir $cluster_root_path/models/${labeling_model}/${train_dataset_name}/${base_model}/lora_${data_type}/ \
                 --with_tracking \
                 --report_to tensorboard \
-                --logging_steps 1 
-                # --use_qlora 
+                --logging_steps 1 \
+                --use_qlora 
 
             python open_instruct/merge_lora.py \
                 --base_model_name_or_path $base_model \
                 --lora_model_name_or_path $cluster_root_path/models/${labeling_model}/${train_dataset_name}/${base_model}/lora_${data_type}/ \
                 --output_dir $cluster_root_path/models/${labeling_model}/${train_dataset_name}/${base_model}/lora_merged_${data_type}/ \
-                --save_tokenizer 
-                # --qlora
+                --save_tokenizer \
+                --qlora
 
             sleep 10s
 
@@ -146,12 +147,12 @@ do
 done
 
 
-# wait
-# sleep 10s
+wait
+sleep 10s
 
-# # # ############################################################
-# # # ######## ####  finetuned model  evaluation ######## #### 
-# # # ###########################################################
+# # ############################################################
+# # ######## ####  finetuned model  evaluation ######## #### 
+# # ###########################################################
 
 # for base_model in "${!base_models[@]}"; do
 
@@ -195,7 +196,7 @@ done
 #                 --model_name_or_path $model_name_or_path \
 #                 --tokenizer_name_or_path $model_name_or_path \
 #                 --n_shot 8 \
-#                 --eval_batch_size 16 
+#                 --eval_batch_size 16 &
 #                 # --use_vllm &
 
 #             ## BBH: 
@@ -210,7 +211,7 @@ done
 #                 --model_name_or_path $model_name_or_path  \
 #                 --tokenizer_name_or_path $model_name_or_path \
 #                 --max_num_examples_per_task 40 \
-#                 --eval_batch_size 16 
+#                 --eval_batch_size 16 \
 #                 --use_vllm &
 
 #             ## truthfulness
@@ -219,7 +220,7 @@ done
 #             eval_dataset_name='truthfulqa'
 #             local_save_dir=${cluster_root_path}/results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
 
-#             CUDA_VISIBLE_DEVICES=3 python -m eval.truthfulqa.run_eval \
+#             CUDA_VISIBLE_DEVICES=4 python -m eval.truthfulqa.run_eval \
 #                 --data_dir raw_data/eval/truthfulqa \
 #                 --save_dir ${local_save_dir} \
 #                 --model_name_or_path $model_name_or_path \
@@ -238,7 +239,7 @@ done
 #             eval_dataset_name='tydiqa'
 #             local_save_dir=${cluster_root_path}/results/${labeling_model}/${train_dataset_name}/${eval_dataset_name}/${base_model}/$data_type
 
-#             CUDA_VISIBLE_DEVICES=4 python -m eval.tydiqa.run_eval \
+#             CUDA_VISIBLE_DEVICES=5 python -m eval.tydiqa.run_eval \
 #                 --data_dir raw_data/eval/tydiqa/ \
 #                 --n_shot 1 \
 #                 --max_num_examples_per_lang 100 \
@@ -249,9 +250,11 @@ done
 #                 --eval_batch_size 20 \
 #                 --load_in_8bit &
 
-#             wait
+            
 
 #         done
+
+#         wait
 
 #     done
 # done

@@ -24,10 +24,7 @@ def parse_args():
 
 
 
-#########################################################################################################################
-
 '''load data'''
-
 args = parse_args()
 cfg = Config.fromfile(args.config)
 cfg.data_root = f'../'
@@ -45,16 +42,12 @@ cfg.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 cfg.label_path = cfg.data_root + f'model_finetune/selected_data/{args.labeling_model}/{args.dataset_name}/output_labels_revised.pt'
 
 
-## cured labels
-# cfg.label_path  =  cfg.data_root + f'model_finetune/selected_data/{args.labeling_model}/{args.dataset_name}/output_labels_revised_cured.pt'
-
 
 dataset = TULU_RLHF(cfg, args, train=True)
 
 test_dataset = None
 print(f'TULU sub-dataset {args.dataset_name} load finished')
 
-#########################################################################################################################
 
 '''preprocess data'''
 pre_processor = Preprocess(cfg, dataset, test_dataset)
@@ -64,7 +57,7 @@ print(pre_processor.save_ckpt_idx)
 
 data_path = lambda x: cfg.save_path + f'embedded_{cfg.dataset_type}_{x}.pt'
 dataset, _ = load_embedding(pre_processor.save_ckpt_idx, data_path, duplicate=True) ## duplicate dataset
-#########################################################################################################################
+
 
 '''detect data'''
 from docta.apis import DetectLabel, DetectFeature
@@ -89,4 +82,3 @@ report_path = cfg.save_path + f'{cfg.dataset_type}_report.pt'
 torch.save(report, report_path)
 print(f'Report saved to {report_path}')
 
-#########################################################################################################################

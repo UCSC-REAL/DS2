@@ -38,13 +38,14 @@ start_time=$(date +%s)
 # train_dataset_name="filtered-cured-50k-active-split-global-half-positive-fixed-base-loss"
 # train_dataset_name="filtered-cured-50k-active-split-global-curve-positive-using-warmup"
 # train_dataset_name="filtered-cured-50k-active-split-global-curve-positive-fixed-base-loss-using-warmup"
+# Train_DATASET_LIST=("filtered-cured-50k-active-split-global-curve-positive-fixed-base-loss-using-warmup")
 
 Train_DATASET_LIST=("base")
 
-# base_model=meta-llama/Llama-3.2-3B
-base_model="meta-llama/Llama-3.1-8B-Instruct"
-
-# Train_DATASET_LIST=("filtered-cured-50k-active-split-global-curve-positive-fixed-base-loss-using-warmup")
+base_model=meta-llama/Llama-3.2-3B
+# base_model="meta-llama/Llama-3.1-8B-Instruct"
+###10k warmup model
+base_model="/mnt/data1/jinlong/token_selection_output/models/meta-llama/Llama-3.2-3B/data_prop_0.6/lora_merged_filtered-cured-10k-full-model"
 
 data_prop=0.6 # 0.3
 eval_dataset_name='tydiqa'
@@ -89,7 +90,7 @@ do
             --save_dir $OUTPUT_PATH \
             --model_name_or_path $pretrained_model \
             --tokenizer_name_or_path $pretrained_model \
-            --eval_batch_size 70 &
+            --eval_batch_size 60 &
             # --load_in_8bit &
 
         

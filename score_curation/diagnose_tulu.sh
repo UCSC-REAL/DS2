@@ -1,10 +1,10 @@
 
 # datasets=('dolly' 'flan_v2' 'oasst1' 'wizardlm' 'stanford_alpaca' 'all_train')
-datasets=('all_train') 
+datasets=('stanford_alpaca') 
 
 # labeling_models=('meta-llama/Meta-Llama-3.1-8B-Instruct' "gpt-4o-mini" 'mistralai/Mistral-7B-Instruct-v0.3')
 
-labeling_models=("gpt-4o-mini" 'mistralai/Mistral-7B-Instruct-v0.3')
+labeling_models=("gpt-4o-mini")
 
 gpus=(0 1 2 3)  # GPU list
 

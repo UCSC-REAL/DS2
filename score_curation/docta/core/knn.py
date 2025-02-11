@@ -98,8 +98,6 @@ def simi_feat_batch(cfg, dataset):
                 thre_noise_rate_per_class = 0.05
             sel_labels = dataset.label[idx] == sel_class
 
-            # import pdb;pdb.set_trace()
-
             thre = np.percentile(
                 score_np[sel_labels], 100 * (1 - thre_noise_rate_per_class))
 

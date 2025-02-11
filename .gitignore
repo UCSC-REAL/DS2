@@ -148,9 +148,9 @@ dmypy.json
 data/
 model_finetune/selected_data/*
 data_scale_models/
-finetune_70B_result/*
-finetune_lima_result/*
-finetune_result/*
+finetune_70B_results
+finetune_lima_result
+finetune_result
 LLM_scoring/tulu_split_json/*
 LLM_scoring/labeling_intern_cluster/train_data/*
 output/*
@@ -159,6 +159,9 @@ results_backup/*
 logs-llama3.1-8b/
 model_finetune/raw_data/*
 labeling/
-
+all_train_embeddings.parquet
+*.pt
+*csv
 *.yaml
-# *.json
+
+*.json

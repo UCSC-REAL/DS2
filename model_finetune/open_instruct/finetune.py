@@ -278,7 +278,6 @@ def parse_args():
     )
 
     args = parser.parse_args()
-    # import pdb;pdb.set_trace()
     # Sanity checks
     if args.dataset_name is None and args.train_file is None:
         raise ValueError("Need either a dataset name or a training file.")
@@ -469,7 +468,7 @@ def main():
             data_files=data_files,
             **dataset_args,
         )
-
+    
     # Load pretrained model and tokenizer
     if args.config_name:
         config = AutoConfig.from_pretrained(
@@ -532,15 +531,15 @@ def main():
 
     if args.model_name_or_path:
         if args.use_qlora:
-            # bnb_config = BitsAndBytesConfig(
-            #     load_in_4bit=True,
-            #     bnb_4bit_use_double_quant=True,
-            #     bnb_4bit_quant_type="nf4",
-            #     bnb_4bit_compute_dtype=torch.bfloat16,
-            # )
             bnb_config = BitsAndBytesConfig(
-                load_in_8bit=True  
+                load_in_4bit=True,
+                bnb_4bit_use_double_quant=True,
+                bnb_4bit_quant_type="nf4",
+                bnb_4bit_compute_dtype=torch.bfloat16,
             )
+            # bnb_config = BitsAndBytesConfig(
+            #     load_in_8bit=True  
+            # )
             device_index = accelerator.local_process_index
             device_map = {"": device_index} # force data-parallel training.
             model = AutoModelForCausalLM.from_pretrained(
@@ -548,7 +547,7 @@ def main():
                 from_tf=bool(".ckpt" in args.model_name_or_path),
                 config=config,
                 quantization_config=bnb_config,
-                device_map=device_map,
+                # device_map=device_map,
                 trust_remote_code=args.trust_remote_code,
                 torch_dtype=torch.bfloat16,
                 use_flash_attention_2=True if args.use_flash_attn else False,
@@ -670,7 +669,6 @@ def main():
         lm_datasets = lm_datasets.filter(lambda example: (example['labels'] != -100).any())
 
     train_dataset = lm_datasets["train"]
-
     # Log a few random samples from the training set:
     # for index in random.sample(range(len(train_dataset)), 3):
     #     logger.info(f"Sample {index} of the training set: {train_dataset[index]}.")
@@ -825,7 +823,6 @@ def main():
             active_dataloader = train_dataloader
         for step, batch in enumerate(active_dataloader):
             with accelerator.accumulate(model):
-                # import pdb;pdb.set_trace()
 
                 outputs = model(**batch, use_cache=False)
 

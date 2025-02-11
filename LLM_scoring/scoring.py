@@ -14,7 +14,6 @@ import regex as re
 from datasets import load_dataset
 import sys
 import gc
-print("Torch version:", torch.__version__)
 
 ### store the model 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -51,6 +50,8 @@ def main(
     do_sample: bool=True, 
     temperature: float=1.2, 
     top_k: int=50, 
+    top_p: float=0.9,
+    repetition_penalty: float=1.0,
     length_penalty: int=1, 
     output_dir="./",
     **kwargs
@@ -101,8 +102,8 @@ def main(
         batch_size =30
         # chat template: https://llama.meta.com/docs/model-cards-and-prompt-formats/llama3_1/
         prompt_template = '''
-                    <|begin_of_text|><|start_header_id|>system<|end_header_id|>{system_prompt}<|eot_id|>
-                    <|start_header_id|>user<|end_header_id|>{user_prompt} \n## Data sample (conversation):\n{conversation}<|eot_id|> 
+                    <|begin_of_text|><|start_header_id|>system<|end_header_id|>{}<|eot_id|>
+                    <|start_header_id|>user<|end_header_id|>{} \n## Data sample (conversation):\n{}<|eot_id|> 
                     <|start_header_id|>assistant<|end_header_id|>
                     '''
         
@@ -112,8 +113,8 @@ def main(
         # chat template: https://www.promptingguide.ai/models/mistral-7b
         # chat template: <s>[INST] Instruction [/INST] Model answer</s>[INST] Follow-up instruction [/INST]
         prompt_template = '''
-                    <s>[INST]system{system_prompt}[/INST]
-                    [INST]user{user_prompt} \n## Data sample (conversation):\n{conversation}[/INST]
+                    <s>[INST]system{}[/INST]
+                    [INST]user{} \n## Data sample (conversation):\n{}[/INST]
                     [INST]assistant
                     '''    
     
@@ -123,8 +124,8 @@ def main(
         batch_size=20
         
         prompt_template = '''
-            <bos><start_of_turn>system{system_prompt}<end_of_turn>
-            <bos><start_of_turn>user{user_prompt} \n## Data sample (conversation):\n{conversation}<end_of_turn>
+            <bos><start_of_turn>system{}<end_of_turn>
+            <bos><start_of_turn>user{} \n## Data sample (conversation):\n{}<end_of_turn>
             <start_of_turn>model
             '''    
 
@@ -133,8 +134,8 @@ def main(
         batch_size = 20
 
         prompt_template = '''
-             <|system|>{system_prompt}<end>\n
-            <|user|>{user_prompt} \n## Data sample (conversation):\n{conversation}<end>\n
+             <|system|>{}<end>\n
+            <|user|>{} \n## Data sample (conversation):\n{}<end>\n
             <|assistant|>
             '''    
             
@@ -250,7 +251,7 @@ def main(
                 do_sample=do_sample,
                 top_p=top_p,
                 temperature=temperature,
-                use_cache=use_cache,
+                use_cache=False,
                 top_k=top_k,
                 repetition_penalty=repetition_penalty,
                 length_penalty=length_penalty,
