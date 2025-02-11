@@ -29,7 +29,8 @@ def main(
     pre_prompt = ('''
         As a data quality estimator, your task is to assess the quality of data sample based on the criteria: Rarity, Complexity, Informativeness.
         Please rate the sample on a scale from 1 to 10 for each criterion, and return an overall rating on a scale from 1 to 10, where a higher score indicates higher level of quality.
-        Now, please carefully evaluate the following data sample and return the integral evaluation scores using the JSON format:
+        Ensure that the ratings are not overly concentrated around a specific score. If multiple samples have similar qualities, consider spreading the scores more evenly to reflect subtle differences.
+        Please carefully evaluate the following data sample and return the integral evaluation scores using the JSON format:
         {
             "Rarity": <number, 1-10>,
             "Complexity": <number, 1-10>,
@@ -82,7 +83,7 @@ def main(
     print("Start API call labeling...")
     print(f"Total dataset size: {len(inputs)}")
     
-    batch_size = 1024 # batch_size
+    batch_size = 1024
     split_size = len(inputs)//batch_size + 1
 
     json_pattern = re.compile(r'\{(?:[^{}]|(?R))*\}')
@@ -134,24 +135,19 @@ def main(
                 except Exception as exc:
                     print(f'{inputs[idx]} generated an exception: {exc}')
 
-        # for content in contents:
-        #     print(f"==" *50)
-        #     print(f"{content}")
         
         print(f'### {batch_idx}-th batch\'s output_labels:: length {len(output_labels)} ;; labels : {output_labels}')
         if len(output_labels) != batch_size:
             print(f"{batch_idx}-th batch's label output is not matching the original size !!!")
 
-        # print(f'### {batch_idx}-th batch\'s unlabeled size: {output_labels.count(0)}')
 
         torch.save(output_labels, path + f"output_labels_{batch_idx}.pt")
         total_output_labels.extend(output_labels)
 
 
-    # assert len(inputs) == len(total_output_labels)
-    print(f'total data size: {len(inputs)};; labeling data size: {len(total_output_labels)}')
+    print(f'Total data size: {len(inputs)};; Labeling data size: {len(total_output_labels)}')
     print(f'Total unlabeled data proportion: {np.array(total_output_labels)[:,-1].tolist().count(0)/len(inputs)*100}%')
-    print(f'overal label score distribution: {Counter(np.array(total_output_labels)[:,-1].tolist())}')
+    print(f'Overall label score distribution: {Counter(np.array(total_output_labels)[:,-1].tolist())}')
     print("Finish API CALL labeling!!!")
 
     print(f"save labels to path: {path + f"total_output_labels.pt"}")

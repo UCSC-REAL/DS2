@@ -56,15 +56,11 @@ pip install -r requirements.txt
 
 In this project, we use three labeling models to generate rating scores, including GPT-4o-mini, Mistral-7B-Instruct-v0.3, LLaMA-3.1-8B-Instruct.  In particular, we can use the GPT API call to generate the model answers by executing the code located in the `LLM_scoring` path: 
 ```
-cd LLM_scoring && bash labeling_datasets_api.sh
+cd LLM_scoring && bash scoring_api.sh
 ``` 
-For open-source models such as LLaMA and Mistral, you can submit the jobs via launcher to the cluster, i.e., 
+For open-source models such as LLaMA and Mistral, one can generate scores locally using 
 ```
-cd LLM_scoring && launcher run job_labeling.yaml
-``` 
-or generate scores locally using 
-```
-cd LLM_scoring && bash scoring_datasets_local.sh
+cd LLM_scoring && bash scoring_api.sh
 ```
 
 
