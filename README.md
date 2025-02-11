@@ -95,7 +95,7 @@ If you used this repository, please cite our work:
 @article{pang2024improving,
   title={Improving Data Efficiency via Curating LLM-Driven Rating Systems},
   author={Pang, Jinlong and Wei, Jiaheng and Shah, Ankit Parag and Zhu, Zhaowei and Wang, Yaxuan and Qian, Chen and Liu, Yang and Bao, Yujia and Wei, Wei},
-  journal={arXiv preprint arXiv:2410.10877},
-  year={2024}
+  journal={International Conference on Learning Representations},
+  year={2025}
 }
 ```
