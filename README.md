@@ -28,6 +28,7 @@ This project is motivated by a common phenomenon that the errors of LLM-generate
 
 ------ 
 
+
 ## Dataset preparation
 
 <!-- This repository follows the codebase from [TULU](https://github.com/allenai/open-instruct).  -->
@@ -41,12 +42,6 @@ bash model_finetune/prepare_eval_data.sh
 bash model_finetune/prepare_train_data.sh
 ```
 
-
-## Environment Setup
-To run training, evaluation, or inference for finetuned models, you need to install the required packages by running the following command (after installing pytorch):
-```bash
-pip install -r requirements.txt
-```
 
 
 ----- 
