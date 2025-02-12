@@ -37,7 +37,6 @@ In response, we introduce **DS2**, a diversity-aware score curation approach to 
 
 ## Dataset preparation
 
-<!-- This repository follows the codebase from [TULU](https://github.com/allenai/open-instruct).  -->
 One can download the evaluation/training data by
 
 ```bash
