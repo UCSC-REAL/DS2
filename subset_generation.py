@@ -50,14 +50,14 @@ def extract_data(reports, scores, selected_subset_size):
     print(f"Size of the remaining samples with high quality: {len(rare_samples_filtered)}")
 
     scores = np.array(scores)
-
+    score_range = [5, 4, 3, 2, 1, 0]
     # Cache score indices to avoid repeated searches
-    score_indices_cache = {score: np.where(scores == score)[0] for score in [5, 4, 3, 2, 1, 0]}
+    score_indices_cache = {score: np.where(scores == score)[0] for score in score_range}
 
     # Initialize list to store selected indices
     filtered_indices = []
     # Filter and sort samples by score
-    for target_score in [5, 4, 3, 2, 1, 0]:
+    for target_score in score_range:
         if len(filtered_indices) >= selected_subset_size:
             break
 
