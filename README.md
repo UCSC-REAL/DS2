@@ -86,7 +86,7 @@ The generated subsets can be further used for the following LLM instruction tuni
 
 ---
 ### 🧩 Step 4. Finetune & Evaluation
-The generated subsets in the `selected_data/` path can be used for LLM instruction tuning.  Here, for easily reproduction, one can directly finetune the models by (Codebase: [TULU](https://github.com/allenai/open-instruct))
+The generated subsets in the `selected_data` path can be used for LLM instruction tuning.  Here, for easily reproduction, one can directly finetune the models by (Codebase: [TULU](https://github.com/allenai/open-instruct))
 ```
 cd model_finetune && bash run_pipeline.sh
 ```
