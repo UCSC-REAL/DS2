@@ -6,7 +6,7 @@
 
 [Jinlong Pang](https://jlpang863.github.io/), [Jiaheng Wei](https://sites.google.com/ucsc.edu/jiahengwei), [Ankit Parag Shah](https://ankitshah009.github.io/), [Zhaowei Zhu](https://users.soe.ucsc.edu/~zhaoweizhu/),  [Yaxuan Wang](https://supergirl-os.github.io/), [Chen Qian](https://users.soe.ucsc.edu/~qian/), [Yang Liu](http://www.yliuu.com/), [Yujia Bao](https://www.yujia.io/) and [Wei Wei](http://www.weiwei.one/).
 
-**[UCSC-REAL Lab](https://github.com/UCSC-REAL), University of California, Santa Cruz**
+**[REAL Lab](https://github.com/UCSC-REAL), University of California, Santa Cruz**
 
 
 ------ 
