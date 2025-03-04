@@ -169,7 +169,7 @@ def main(
     print(f'Overall score score distribution: {Counter(np.array(total_output_scores)[:,-1].tolist())}')
     print("Finish API call scoring!!!")
 
-    print(f"save scores to path: {output_path + f"total_output_scores.pt"}")
+    print(f"save scores to path: {output_path}total_output_scores.pt")
 
     ## rematching raw score to [0,1,2,3,4,5]
     output_scores_revised = score_compress(total_output_scores)
