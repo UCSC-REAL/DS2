@@ -149,7 +149,7 @@ data/
 model_finetune/selected_data/*
 model_finetune/raw_data/*
 
-*.pt
+# *.pt
 *csv
 *.yaml
 *.json
