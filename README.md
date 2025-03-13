@@ -12,8 +12,9 @@
 ------ 
 
 ## 🎉🎉 News 
+- [x] [2025.03.13] 🔥🔥 Release LLM generated raw scores (GPT-4o-mini, LLM-3.1-8b-inst, Mistral-7b-v0.3-inst) for [TULU_300k](https://huggingface.co/datasets/jlpang888/tulu_300k) in Huggingface!
 - [x] [2025.01.22] 👏👏 Accepted by **ICLR 2025**.
-- [x] [2024.11.10] 📢📢 Release the [curated dataset](https://huggingface.co/datasets/jlpang888/cured_dataset_gpt_4o_mini) in the Huggingface.
+- [x] [2024.11.10] 📢📢 Release the [curated dataset](https://huggingface.co/datasets/jlpang888/cured_dataset_gpt_4o_mini) in Huggingface.
 - [x] [2024.10.08] 🚀🚀 Release the code of **DS2**.
 
 ## Brief Introduction
