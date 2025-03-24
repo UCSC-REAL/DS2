@@ -1,13 +1,8 @@
 results
-models
 wandb
 data/*
 raw_data/*
-data_refine/*
-output-backup/*
 results/*
-results_backup/*
-zzz-test/*
 
 # !data/processed
 output/
