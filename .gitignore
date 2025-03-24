@@ -1,8 +1,6 @@
-results
 wandb
 data/*
 raw_data/*
-results/*
 
 # !data/processed
 output/
@@ -140,9 +138,14 @@ dmypy.json
 
 
 #models & datas
-data/
-model_finetune/selected_data/*
-model_finetune/raw_data/*
+
+selected_data
+model_finetune/raw_data/
+score_curation_results/
+scoring_output/
+model_output/
+figures/
+demo_test.ipynb
 
 # *.pt
 *csv

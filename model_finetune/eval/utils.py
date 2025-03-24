@@ -6,12 +6,10 @@ import asyncio
 import os
 from importlib import import_module
 from transformers import StoppingCriteria, BitsAndBytesConfig
-from eval.dispatch_openai_requests import dispatch_openai_chat_requesets, dispatch_openai_prompt_requesets
+# from model_finetune.eval.dispatch_openai_requests import dispatch_openai_chat_requesets, dispatch_openai_prompt_requesets
 import warnings
 
 
-# cache_dir = '/tmp/huggingface/hub/'
-# os.makedirs(cache_dir, exist_ok=True)
 
 class KeyWordsCriteria(StoppingCriteria):
     def __init__(self, stop_id_sequences):
@@ -248,27 +246,30 @@ def load_hf_lm(
         model = model_wrapper.model  
 
     elif load_in_8bit:
-        # bnb_config = BitsAndBytesConfig(
-        #     load_in_8bit=True,
-        # )    
+        bnb_config = BitsAndBytesConfig(
+            load_in_8bit=True,
+        )    
         model = AutoModelForCausalLM.from_pretrained(
             model_name_or_path, 
             device_map=device_map, 
-            load_in_8bit=True,
+            quantization_config=bnb_config,
             token=token,
             trust_remote_code=trust_remote_code,
-            # cache_dir=cache_dir,
         )
 
     elif load_in_4bit: ### for 70B models
-
+        nf4_config = BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_compute_dtype=torch.bfloat16
+        )   
         model = AutoModelForCausalLM.from_pretrained(
             model_name_or_path, 
             device_map=device_map, 
-            load_in_4bit=True,
+            quantization_config=nf4_config,
             token=token,
             trust_remote_code=trust_remote_code,
-            # cache_dir=cache_dir,
         )
         
     else:
@@ -276,11 +277,9 @@ def load_hf_lm(
             model = AutoModelForCausalLM.from_pretrained(
                 model_name_or_path,
                 device_map=device_map,
-                # load_in_4bit=True,
                 torch_dtype=torch_dtype,
                 token=token,
                 trust_remote_code=trust_remote_code,
-                # cache_dir=cache_dir,
 
             )
         else:
@@ -289,7 +288,6 @@ def load_hf_lm(
                 torch_dtype=torch_dtype,
                 token=token,
                 trust_remote_code=trust_remote_code,
-                # cache_dir=cache_dir,
             )
             if torch.cuda.is_available():
                 model = model.cuda()

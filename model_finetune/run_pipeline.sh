@@ -7,7 +7,8 @@ RAW_DATASET_LIST=('tulu_300k') # data source
 rating_model="meta-llama/Meta-Llama-3.1-8B-Instruct" #"gpt-4o-mini" 'mistralai/Mistral-7B-Instruct-v0.3'
 
 declare -A base_models
-base_models["meta-llama/Meta-Llama-3.1-8B"]="128 1 2048"  # TOTAL_BATCH_SIZE BATCH_SIZE_PER_GPU max_seq_length
+# base_models["meta-llama/Meta-Llama-3.1-8B"]="128 1 2048"  # TOTAL_BATCH_SIZE BATCH_SIZE_PER_GPU max_seq_length
+base_models["meta-llama/Llama-3.2-3B"]="32 1 128"  # TOTAL_BATCH_SIZE BATCH_SIZE_PER_GPU max_seq_length
 
 # data types represent the generated subsets by baselines
 data_types=('ds2_10k')  
@@ -20,75 +21,75 @@ data_types=('ds2_10k')
 cluster_root_path="../model_output" 
 mkdir -p $cluster_root_path
 
-for base_model in "${!base_models[@]}"
-do
-    IFS=' ' read -r -a params <<< "${base_models[$base_model]}"
-    TOTAL_BATCH_SIZE=${params[0]}
-    BATCH_SIZE_PER_GPU=${params[1]}
-    max_seq_length=${params[2]}
+# for base_model in "${!base_models[@]}"
+# do
+#     IFS=' ' read -r -a params <<< "${base_models[$base_model]}"
+#     TOTAL_BATCH_SIZE=${params[0]}
+#     BATCH_SIZE_PER_GPU=${params[1]}
+#     max_seq_length=${params[2]}
 
 
-    for raw_dataset_name in "${RAW_DATASET_LIST[@]}"
-    do
+#     for raw_dataset_name in "${RAW_DATASET_LIST[@]}"
+#     do
 
-        for data_type in "${data_types[@]}"
-        do
+#         for data_type in "${data_types[@]}"
+#         do
 
-            if [[ $data_type == "base" ]]; then
-                echo "Skipping base model finetune"
-                continue     
-            fi
+#             if [[ $data_type == "base" ]]; then
+#                 echo "Skipping base model finetune"
+#                 continue     
+#             fi
 
-            mkdir -p $cluster_root_path/models/
-            train_data="../selected_data/${rating_model}/${raw_dataset_name}/${data_type}_dataset.json"
+#             mkdir -p $cluster_root_path/models/
+#             train_data="../selected_data/${rating_model}/${raw_dataset_name}/${data_type}_dataset.json"
 
-            GRADIENT_ACC_STEPS=$(($TOTAL_BATCH_SIZE/$NUM_GPUS/$BATCH_SIZE_PER_GPU))
-            echo "Training ${base_model} using $NUM_GPUS GPUs, $BATCH_SIZE_PER_GPU batch size per GPU, $GRADIENT_ACC_STEPS gradient accumulation steps"
-            echo "Training data path: ${train_data}"
+#             GRADIENT_ACC_STEPS=$(($TOTAL_BATCH_SIZE/$NUM_GPUS/$BATCH_SIZE_PER_GPU))
+#             echo "Training ${base_model} using $NUM_GPUS GPUs, $BATCH_SIZE_PER_GPU batch size per GPU, $GRADIENT_ACC_STEPS gradient accumulation steps"
+#             echo "Training data path: ${train_data}"
 
-            ### Lora training
-            accelerate launch \
-                --mixed_precision bf16 \
-                --num_machines 1 \
-                --num_processes $NUM_GPUS \
-                finetune.py \
-                --model_name_or_path $base_model \
-                --use_lora \
-                --lora_rank 64 \
-                --lora_alpha 16 \
-                --seed $SEED \
-                --lora_dropout 0.1 \
-                --tokenizer_name $base_model \
-                --use_slow_tokenizer \
-                --train_file $train_data \
-                --max_seq_length $max_seq_length \
-                --preprocessing_num_workers 16 \
-                --checkpointing_steps epoch \
-                --per_device_train_batch_size $BATCH_SIZE_PER_GPU \
-                --gradient_accumulation_steps $GRADIENT_ACC_STEPS \
-                --learning_rate 1e-4 \
-                --lr_scheduler_type linear \
-                --warmup_ratio 0.03 \
-                --weight_decay 0. \
-                --num_train_epochs 5 \
-                --output_dir $cluster_root_path/models/${rating_model}/${raw_dataset_name}/${base_model}/lora_${data_type}/ \
-                --with_tracking \
-                --report_to tensorboard \
-                --logging_steps 1
+#             ### Lora training
+#             accelerate launch \
+#                 --mixed_precision bf16 \
+#                 --num_machines 1 \
+#                 --num_processes $NUM_GPUS \
+#                 finetune.py \
+#                 --model_name_or_path $base_model \
+#                 --use_lora \
+#                 --lora_rank 64 \
+#                 --lora_alpha 16 \
+#                 --seed $SEED \
+#                 --lora_dropout 0.1 \
+#                 --tokenizer_name $base_model \
+#                 --use_slow_tokenizer \
+#                 --train_file $train_data \
+#                 --max_seq_length $max_seq_length \
+#                 --preprocessing_num_workers 16 \
+#                 --checkpointing_steps epoch \
+#                 --per_device_train_batch_size $BATCH_SIZE_PER_GPU \
+#                 --gradient_accumulation_steps $GRADIENT_ACC_STEPS \
+#                 --learning_rate 1e-4 \
+#                 --lr_scheduler_type linear \
+#                 --warmup_ratio 0.03 \
+#                 --weight_decay 0. \
+#                 --num_train_epochs 5 \
+#                 --output_dir $cluster_root_path/models/${rating_model}/${raw_dataset_name}/${base_model}/lora_${data_type}/ \
+#                 --with_tracking \
+#                 --report_to tensorboard \
+#                 --logging_steps 1
 
-            python merge_lora.py \
-                --base_model_name_or_path $base_model \
-                --lora_model_name_or_path $cluster_root_path/models/${rating_model}/${raw_dataset_name}/${base_model}/lora_${data_type}/ \
-                --output_dir $cluster_root_path/models/${rating_model}/${raw_dataset_name}/${base_model}/lora_merged_${data_type}/ \
-                --save_tokenizer
+#             python merge_lora.py \
+#                 --base_model_name_or_path $base_model \
+#                 --lora_model_name_or_path $cluster_root_path/models/${rating_model}/${raw_dataset_name}/${base_model}/lora_${data_type}/ \
+#                 --output_dir $cluster_root_path/models/${rating_model}/${raw_dataset_name}/${base_model}/lora_merged_${data_type}/ \
+#                 --save_tokenizer
 
-            sleep 10s
+#             sleep 10s
 
-            rm -rf $cluster_root_path/models/${rating_model}/${raw_dataset_name}/${base_model}/lora_${data_type}
+#             rm -rf $cluster_root_path/models/${rating_model}/${raw_dataset_name}/${base_model}/lora_${data_type}
 
-        done
-    done
-done
+#         done
+#     done
+# done
 
 
 wait
@@ -101,7 +102,7 @@ echo "starting evaluating finetuned models..."
 
 for base_model in "${!base_models[@]}"; do
 
-    for raw_dataset_name in "${TRAIN_DATASET_LIST[@]}"; do
+    for raw_dataset_name in "${RAW_DATASET_LIST[@]}"; do
 
         for data_type in "${data_types[@]}"; do
 

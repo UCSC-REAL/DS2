@@ -1,5 +1,5 @@
 # TODO When updating flash-attn or torch in the future, make sure to update the version in the Dockerfile 
-torch
+torch==2.5.1
 deepspeed
 accelerate==0.31.0
 transformers
@@ -18,3 +18,4 @@ wandb
 docta.ai
 gradio>=3.50.2
 seaborn
+vllm==0.7.0
