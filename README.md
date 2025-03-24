@@ -64,7 +64,7 @@ cd LLM_scoring && bash scoring.sh
 cd LLM_scoring && bash scoring_api.sh
 ```
 
-By default, we compress rating scores into six categories `[0,1,2,3,4,5]`, although adjustments can be made to suit specific requirements if necessary.
+By default, we compress rating scores into six categories `[0,1,2,3,4,5]`, although adjustments can be made to suit specific requirements if necessary. Please ensure to update the corresponding value in `score_curation/tulu_template.py` and `subset_generation.py` if any changes are made.
 
 ---
 

@@ -47,7 +47,6 @@ def extract_data(reports, scores, selected_subset_size, score_category):
     rare_samples_filtered = np.array(rare_samples)[:, :2]  # Use NumPy for faster operations
 
     print(f"Size of the remaining samples with high quality: {len(rare_samples_filtered)}")
-    import pdb;pdb.set_trace()
     scores = np.array(scores)
     score_range = list(range(score_category-1, -1, -1))
     # Cache score indices to avoid repeated searches
@@ -101,7 +100,7 @@ def main(
     root_score_path = "scoring_output",
     score_curation_path = "score_curation_results",
     output_dir = "selected_data",
-    score_category = 6,
+    score_category = 6, #Number of score category
     ):
 
     score_path = root_score_path + f"/{model_name}/{dataset_name}/"
