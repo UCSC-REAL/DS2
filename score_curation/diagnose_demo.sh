@@ -1,11 +1,12 @@
 
 datasets=('tulu_300k')
-rating_models=('meta-llama/Meta-Llama-3.1-8B-Instruct' "gpt-4o-mini" 'mistralai/Mistral-7B-Instruct-v0.3')
+# rating_models=('meta-llama/Meta-Llama-3.1-8B-Instruct' "gpt-4o-mini" 'mistralai/Mistral-7B-Instruct-v0.3')
+rating_models=('meta-llama/Meta-Llama-3.1-8B-Instruct')
 
 score_root_path="../scoring_output/"
 output_dir="../score_curation_results/"
 
-gpus=(0 1 2 3)  # GPU list
+gpus=(0)  # GPU list
 
 for idx in ${!rating_models[@]}; do
   dataset=${datasets[0]}
@@ -21,7 +22,7 @@ for idx in ${!rating_models[@]}; do
     --dataset_name $dataset \
     --score_root_path $score_root_path \
     --output_dir $output_dir \
-    --rating_model $rating_model &
+    --rating_model $rating_model
 
 done
 

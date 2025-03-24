@@ -27,9 +27,9 @@ def score_compress(original_scores):
     #rematching to [0,1,2,3,4,5]
     scores_revised = []
     for score in original_scores:
-        if score < 4:
+        if score <= 4:
             scores_revised.append(4)
-        elif score > 10:
+        elif score >= 9:
             scores_revised.append(9)
         else:
             scores_revised.append(score)

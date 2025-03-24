@@ -15,8 +15,6 @@ packaging
 openai>=1.0.0
 tiktoken
 wandb
+docta.ai
 gradio>=3.50.2
-
-
-
-
+seaborn

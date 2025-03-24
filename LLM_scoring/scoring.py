@@ -41,6 +41,7 @@ class CustomDataset(Dataset):
 def preprocessing(dataset_name, prompt_template, system_prompt, user_prompt):
     inputs = []
 
+
     if dataset_name == 'tulu_300k':
         dialogs = load_dataset('jlpang888/tulu_300k')['train']
         for dialog in dialogs:
@@ -48,8 +49,8 @@ def preprocessing(dataset_name, prompt_template, system_prompt, user_prompt):
             for message in dialog['messages']:  #[{{'role': 'user', 'content': 'blabla'}, {'role': 'assistant', 'content': 'blabla'}]
                 conversation += f"### {message['role']}: {message['content']}\n"
             inputs.append(prompt_template.format(system_prompt, user_prompt, conversation))
-    
     else:
+        print("Unknown dataset! Please check the dialog information!")
         raise NotImplementedError
     
     return inputs
@@ -132,9 +133,9 @@ def score_compress(original_scores):
     #rematching to [0,1,2,3,4,5]
     scores_revised = []
     for score in original_scores:
-        if score < 4:
+        if score <= 4:
             scores_revised.append(4)
-        elif score > 10:
+        elif score >=9:
             scores_revised.append(9)
         else:
             scores_revised.append(score)

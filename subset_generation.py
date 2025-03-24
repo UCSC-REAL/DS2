@@ -15,7 +15,6 @@ np.random.seed(seed)
 
 
 def score_curating(reports, score_path, confidence_prob):
-    
     corrupted_samples = [x[0] for x in reports.detection['score_error']]
 
     curated_sample = []
@@ -34,23 +33,23 @@ def score_curating(reports, score_path, confidence_prob):
     print(f"Corrupted samples total: {len(corrupted_samples_total)}")
 
     # Change the original scores to the suggested score
-    scores = torch.load(score_path + "output_scores.pt")
+    scores = torch.load(score_path + "output_scores_revised.pt")
 
     for sample_score in curated_sample_scores:
         scores[sample_score[0]] = sample_score[1]
         
     return scores
 
-def extract_data(reports, scores, selected_subset_size):
+def extract_data(reports, scores, selected_subset_size, score_category):
     
     # Part 2 (feature-wise): Long-tail Diversity Score Sort
     rare_samples = reports.detection['rare_example'][:len(reports.detection['rare_example']) // 2]
     rare_samples_filtered = np.array(rare_samples)[:, :2]  # Use NumPy for faster operations
 
     print(f"Size of the remaining samples with high quality: {len(rare_samples_filtered)}")
-
+    import pdb;pdb.set_trace()
     scores = np.array(scores)
-    score_range = [5, 4, 3, 2, 1, 0]
+    score_range = list(range(score_category-1, -1, -1))
     # Cache score indices to avoid repeated searches
     score_indices_cache = {score: np.where(scores == score)[0] for score in score_range}
 
@@ -75,9 +74,8 @@ def extract_data(reports, scores, selected_subset_size):
                 sorted_samples = score_samples[score_samples[:, 1].argsort()[::-1]][:available_size]
                 filtered_indices.extend(sorted_samples[:, 0].astype(int).tolist())
 
-        print("Size of the filtered dataset:", len(filtered_indices))
     return filtered_indices
-    
+
 
 def print_score_heatmap(reports, dataset_name, save_path="figures/"):
     
@@ -103,6 +101,7 @@ def main(
     root_score_path = "scoring_output",
     score_curation_path = "score_curation_results",
     output_dir = "selected_data",
+    score_category = 6,
     ):
 
     score_path = root_score_path + f"/{model_name}/{dataset_name}/"
@@ -114,16 +113,16 @@ def main(
     else:
         raise NotImplementedError
 
-    print_score_heatmap(reports, dataset_name)
-
     # score curation reports
     reports = torch.load(report_path)
+    print_score_heatmap(reports, dataset_name)
+
     curated_scores = score_curating(reports, score_path, confidence_prob)
     torch.save(curated_scores, score_path + f"output_scores_curated.pt")
     
     
     ## extract subset
-    selected_indices = extract_data(reports, curated_scores, selected_subset_size)
+    selected_indices = extract_data(reports, curated_scores, selected_subset_size, score_category)
     
     # Load the dataset and filter out samples by selected indices
     selected_dialogs = raw_dataset.select(selected_indices)

@@ -16,10 +16,6 @@ class TULU_RLHF(CustomizedDataset):
         ###########################################################
         # load & save datasets
         os.makedirs(cfg.save_path, exist_ok=True)
-        
-
-        print(f"#### score path: {score_path} ")
-
         score = torch.load(score_path)
         print(f'preprocessed dataset {cfg.preprocessed_dataset_path}...')
 

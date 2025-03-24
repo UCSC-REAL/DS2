@@ -1,7 +1,7 @@
 # dataset settings
 seed = 0
 modality = 'text' # image, text, tabular
-num_classes = 6 
+num_classes = 6  ## # of the score categories
 
 rating_model = 'meta/llama-3.1-8b-instruct'
 dataset_name = 'tulu_300k'

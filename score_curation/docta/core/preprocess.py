@@ -64,7 +64,6 @@ def extract_embedding(cfg, encoder, dataset_list):
             dataset_embedding, dataset_idx, dataset_label = [], [], []
             save_cnt += 1
         ckpt_idx.append(save_cnt)
-    print(f"$####### save_cnt: {save_cnt}")
     return ckpt_idx
 
 

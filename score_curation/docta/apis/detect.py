@@ -69,19 +69,19 @@ class DetectLabel(Diagnose):
         noisy_avg = (np.sum(sel_noisy_rec, 0) + 1) / (sel_times_rec + 2) ##average noise level
         # sel_clean_summary = np.round(1.0 - noisy_avg).astype(bool)
         sel_noisy_summary = np.round(noisy_avg).astype(bool)
-        num_label_errors = np.sum(sel_noisy_summary)
-        print(f'[SimiFeat] We find {num_label_errors} corrupted instances from {sel_noisy_summary.shape[0]} instances')
-        idx = np.argsort(noisy_avg)[-num_label_errors:][::-1] # raw index
+        num_score_errors = np.sum(sel_noisy_summary)
+        print(f'[SimiFeat] We find {num_score_errors} corrupted instances from {sel_noisy_summary.shape[0]} instances')
+        idx = np.argsort(noisy_avg)[-num_score_errors:][::-1] # raw index
         suggest_matrix = (suggest_label_rec + 1) / (np.sum(suggest_label_rec, 1).reshape(-1,1) + self.cfg.num_classes) # #samples * classes
 
         # update report
         detection = dict(
-            label_error = [[i, noisy_avg[i]] for i in idx]
+            score_error = [[i, noisy_avg[i]] for i in idx]
         )
 
         suggest_matrix[range(len(suggest_matrix)), np.array(self.dataset.label)] = -1
         curation = dict(
-            label_curation = [[i, np.argmax(suggest_matrix[i]), suggest_matrix[i][np.argmax(suggest_matrix[i])] * noisy_avg[i]] for i in idx]
+            score_curation = [[i, np.argmax(suggest_matrix[i]), suggest_matrix[i][np.argmax(suggest_matrix[i])] * noisy_avg[i]] for i in idx]
         )
         self.report.update(detection=detection, curation=curation)
 

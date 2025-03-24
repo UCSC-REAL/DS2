@@ -79,13 +79,11 @@ def simi_feat_batch(cfg, dataset):
     label_pred = np.argmax(knn_labels_cnt.cpu().numpy(), axis=1).reshape(-1)
     if cfg.detect_cfg.method == 'mv':
         # test majority voting
-        # print(f'Use MV')
         sel_true_false = label_pred != dataset.label[idx]
         sel_noisy = (sel_idx[sel_true_false]).tolist()
         suggest_label = label_pred[sel_true_false].tolist()
     elif cfg.detect_cfg.method == 'rank':
-        # print(f'Use ranking')
-
+        
         sel_noisy = []
         suggest_label = []
         for sel_class in range(num_classes):
@@ -100,7 +98,6 @@ def simi_feat_batch(cfg, dataset):
 
             thre = np.percentile(
                 score_np[sel_labels], 100 * (1 - thre_noise_rate_per_class))
-
             indicator_all_tail = (score_np >= thre) * (sel_labels)  ### index of labels
             sel_noisy += sel_idx[indicator_all_tail].tolist()
             suggest_label += label_pred[indicator_all_tail].tolist() ## KNN label

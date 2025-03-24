@@ -11,12 +11,12 @@ class Report:
             group_distribution = None, # histogram           
         )
         self.detection = kwargs['detection'] if 'detection' in kwargs else dict(
-            label_error = None, # (index, confidence)
+            score_error = None, # (index, confidence)
             coexistence = None, # (index, confidence)
             rare_example = None, # (index, confidence)          
         )
         self.curation = kwargs['curation'] if 'curation' in kwargs else dict(
-            label_curation = None, # (index, suggested_label, confidence)
+            score_curation = None, # (index, suggested_label, confidence)
             sampling_strategy = None, # (index, suggested_sample)
             feature_curation = None, # (index, suggested_feature)          
         )
@@ -46,12 +46,12 @@ class Report:
 if __name__ == '__main__':
     report = Report()
     dict_test1 = dict(
-            label_error = 1, # (index, confidence)
+            score_error = 1, # (index, confidence)
             coexistence = 2, # (index, confidence)
             rare_example = None, # (index, confidence)          
         )
     dict_test2 = dict(
-            label_curation = 3, # (index, suggested_label)
+            score_curation = 3, # (index, suggested_label)
             sampling_strategy = 4, # (index, suggested_sample)
             feature_curation = None, # (index, suggested_feature)          
         )
