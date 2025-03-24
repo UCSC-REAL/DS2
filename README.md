@@ -55,7 +55,7 @@ bash model_finetune/prepare_train_data.sh
 
 ### 🧩 Step 1. LLM-prompt-based rating
 
-In this project, we use three labeling models to generate rating scores, including GPT-4o-mini, Mistral-7B-Instruct-v0.3, LLaMA-3.1-8B-Instruct.  One can obtain the LLM-generated rating score by: 
+In this project, we use three labeling models to generate rating scores, including GPT-4o-mini, Mistral-7B-Instruct-v0.3, LLaMA-3.1-8B-Instruct.  One can obtain the LLM-generated rating scores by: 
 ```bash
 #Open-source LLMs
 cd LLM_scoring && bash scoring.sh
@@ -63,8 +63,7 @@ cd LLM_scoring && bash scoring.sh
 # Api call
 cd LLM_scoring && bash scoring_api.sh
 ```
-
-
+By default, we compress rating scores into six categories, although adjustments can be made to suit specific requirements if necessary.
 ---
 
 ### 🧩 Step 2. Score curation
